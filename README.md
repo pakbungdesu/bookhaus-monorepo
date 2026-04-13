@@ -24,9 +24,14 @@
 ```text
 bookhaus-monorepo/
 ├── apps/
-│   ├── api-gateway/       # NestJS Gateway & Authentication
-│   ├── inventory-service/ # Java/Spring Boot Enterprise Logic
-│   └── ai-recommender/    # Python/ML Recommendation Service
+│   ├── auth-service/
+│   ├── customer-service/
+│   └── employee-service/
+│   └── favorite-service/
+│   └── gateway/
+│   └── info-service/
+│   └── inventory-service/
+│   └── order-service/
 ├── libs/                  # Shared types, DTOS, and Common Utilities
 └── docker-compose.yml     # Local orchestration for DB and Services
 ```
