@@ -1,0 +1,6 @@
+
+<% if (typeof user === 'undefined' || !user || user.DTYPE === 'CUSTOMER' || user.DTYPE === 'Customer') { %>
+    <%- include('navOther') %>
+<% } else if (user.DTYPE === 'EMPLOYEE' || user.DTYPE === 'Employee') { %>
+    <%- include('navEmp') %>
+<% } %> 

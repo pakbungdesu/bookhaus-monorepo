@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-4xl mx-auto px-6 py-16">
+         <section class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold text-gray-900 mb-6">About Bookhaus Bookstore 📖✨</h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+                Welcome to <span class="font-bold text-black border-b-2 border-yellow-400">Bookhaus Bookstore</span>. Your cozy corner for literary discovery and passionate reading.
+            </p>
+        </section>
+
+        <div class="bg-white p-10 text-center rounded-3xl shadow-xl shadow-gray-100 border border-gray-100">
+            <div class="space-y-6 text-left">
+                <section class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-md transition duration-300 border border-transparent hover:border-gray-100">
+                    <h3 class="font-bold text-xl flex items-center gap-3 mb-2">
+                        <i class="pi pi-book text-blue-600"></i> Our Mission
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">To curate a thoughtful collection of books that inspires, educates, and entertains readers of all ages.</p>
+                </section>
+
+                <section class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-md transition duration-300 border border-transparent hover:border-gray-100">
+                    <h3 class="font-bold text-xl flex items-center gap-3 mb-2">
+                        <i class="pi pi-globe text-green-600"></i> Our Vibe
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">We champion independent voices and diverse genres, creating a space where you can easily find your next great read.</p>
+                </section>
+
+                <section class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-md transition duration-300 border border-transparent hover:border-gray-100">
+                    <h3 class="font-bold text-xl flex items-center gap-3 mb-2">
+                        <i class="pi pi-users text-purple-600"></i> Our Promise
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">We are committed to providing high-quality books, excellent customer service, and a seamless shopping experience.</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

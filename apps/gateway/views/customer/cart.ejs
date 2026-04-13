@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 antialiased">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h1 class="text-2xl font-bold text-gray-800">Shopping Cart</h1>
+            </div>
+
+            <div class="p-0">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                        <tr>
+                            <th class="px-6 py-4">Book</th>
+                            <th class="px-6 py-4 text-center">Quantity</th>
+                            <th class="px-6 py-4">Unit Price</th>
+                            <th class="px-6 py-4 text-right">Subtotal</th>
+                            <th class="px-6 py-4 text-center">Action</th> </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% if (cart && cart.length > 0) { %>
+                            <% cart.forEach(item => { %>
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-gray-900"><%= item.book.title %></td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <input type="number" 
+                                                value="<%= item.quantity %>"
+                                                class="w-16 px-2 py-1 border rounded text-center focus:ring-2 focus:ring-blue-500" 
+                                                onchange="updateCart(event, '<%= item.productId %>', this.value)">
+
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">$<%= item.unitPrice.toFixed(2) %></td>
+                                    <td class="px-6 py-4 text-right font-bold text-gray-900">
+                                        $<%= (item.unitPrice * item.quantity).toFixed(2) %>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <button type="button" 
+                                                onclick="removeFromCart(event, '<%= item.productId %>')"
+                                                class="text-red-500 hover:scale-110 transition">
+                                            <i class="pi pi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-400 italic">Your cart is empty.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                    <tfoot class="bg-gray-50 font-bold">
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-right text-gray-600">Grand Total:</td>
+                            <td class="px-6 py-4 text-right text-xl text-blue-600">$<%= cartTotal.toFixed(2) %></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="p-6 bg-gray-50 border-t border-gray-200 flex justify-end gap-4">
+                <% if (cart && cart.length > 0) { %>
+                    <button type="button" onclick="cancelCart(event)" class="inline-flex items-center gap-2 px-6 py-2.5 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">
+                        <i class="pi pi-times"></i> Cancel Order
+                    </button>
+
+                    <a href="/book/search" class="inline-flex items-center gap-2 px-6 py-2.5 text-blue-600 font-semibold hover:bg-blue-50 rounded-lg transition">
+                        <i class="pi pi-shopping-bag"></i> Continue Shopping
+                    </a>
+                    
+                    <form action="/order/checkout" method="POST">
+                        <button type="submit" class="inline-flex items-center gap-2 px-8 py-2.5 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg shadow-green-100">
+                            <i class="pi pi-check"></i> Confirm Purchase
+                        </button>
+                    </form>
+                <% } else { %>
+                    <a href="/book/search" class="inline-flex items-center gap-2 px-6 py-2.5 text-blue-600 font-semibold hover:bg-blue-50 rounded-lg transition">
+                        <i class="pi pi-shopping-bag"></i> Browse Books
+                    </a>
+
+                    <button type="button" disabled class="inline-flex items-center gap-2 px-8 py-2.5 bg-gray-300 text-gray-500 font-bold rounded-lg cursor-not-allowed">
+                        <i class="pi pi-lock"></i> Confirm Purchase
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function cancelCart(event) {
+            if (event) event.preventDefault();
+            if (!confirm('Are you sure you want to clear your entire cart?')) return;
+
+            try {
+                const response = await fetch('/order/cart/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.error('Failed to cancel order:', err);
+            }
+        }
+
+        async function updateCart(event, productId, quantity) {
+            if (event) event.preventDefault();
+            
+            console.log('AJAX Starting for product:', productId);
+            
+            try {
+                const response = await fetch('/order/cart/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, quantity })
+                });
+
+                console.log('Server responded with status:', response.status);
+
+                if (response.ok) {
+                    window.location.reload(); 
+                }
+            } catch (err) {
+                console.error('Fetch failed completely:', err);
+            }
+        }
+
+        async function removeFromCart(event, productId) {
+            // 1. STOP the browser from spinning/submitting a form
+            if (event) event.preventDefault();
+
+            console.log('AJAX Start: Attempting to remove product ID:', productId);
+
+            if (!confirm('Remove this book from your cart?')) {
+                console.log('User cancelled removal.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/order/cart/remove', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    // Ensure we send exactly what the Gateway expects
+                    body: JSON.stringify({ productId: String(productId) })
+                });
+
+                // This will now print!
+                console.log('Gateway Response Status:', response.status);
+
+                if (response.ok) {
+                    console.log('Removal successful, reloading page...');
+                    window.location.reload();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Server returned an error:', errorText);
+                    alert('Could not remove item. Please try again.');
+                }
+            } catch (err) {
+                // This catches network issues or if the Gateway is down
+                console.error('Fetch failed completely:', err);
+                alert('Network error. Check if the Gateway is running.');
+            }
+        }
+</script>
+</body>
+</html>

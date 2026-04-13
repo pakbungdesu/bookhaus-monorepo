@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-4xl mx-auto px-6 py-16">
+        <header class="mb-12">
+            <h1 class="text-5xl font-extrabold text-gray-900 flex items-center gap-4 mb-4">
+                Contact Us <span class="text-3xl">📱</span>
+            </h1>
+            <p class="text-lg text-gray-600">We love hearing from our fellow book enthusiasts!</p>
+        </header>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+            <div class="flex flex-col md:flex-row border-b border-gray-100 p-8 gap-4">
+                <div class="md:w-1/3 flex items-center font-bold text-gray-900 gap-3">
+                    <i class="pi pi-envelope"></i> Email
+                </div>
+                <div class="flex-1">
+                    <span class="italic text-gray-700 block">hello@bookhaus.com</span>
+                    <span class="text-xs text-gray-400">For general inquiries and technical questions</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row border-b border-gray-100 p-8 gap-4">
+                <div class="md:w-1/3 flex items-center font-bold text-gray-900 gap-3">
+                    <i class="pi pi-phone"></i> Phone
+                </div>
+                <div class="flex-1 text-gray-700">
+                    (555) 555-BOOK
+                    <span class="text-xs text-gray-400 block mt-1">For order support and quick questions</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row p-8 gap-4">
+                <div class="md:w-1/3 flex items-center font-bold text-gray-900 gap-3">
+                    <i class="pi pi-map-marker"></i> Address
+                </div>
+                <div class="flex-1 text-gray-700">
+                    123 Library Lane, Reading City
+                    <span class="text-xs text-gray-400 block mt-1">Demo Location</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-8 py-4 font-bold border-b border-gray-200">Business Hours</div>
+            <div class="p-8">
+                <p class="text-gray-600 mb-6">We are an online demo store, so our website is always open!</p>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl flex items-center gap-4 text-blue-800">
+                    <i class="pi pi-info-circle text-xl"></i>
+                    <div>
+                        <strong class="block">Customer Support:</strong>
+                        <span class="text-sm">Monday – Friday, 9:00 AM – 5:00 PM (PST)</span>
+                    </div>
+                </div>
+
+                <p class="mt-8 italic font-medium text-gray-800">Thank you for visiting Bookhaus Bookstore!</p>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

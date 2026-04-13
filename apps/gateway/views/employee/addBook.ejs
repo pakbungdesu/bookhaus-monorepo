@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add New Book | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-50 antialiased">
+    <%- include('../partials/navbar') %>
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-10">
+            <h1 class="text-3xl font-bold mb-2 tracking-tighter text-gray-800">New Book Entry 📚</h1>
+            <p class="text-gray-400 text-sm mb-8 font-bold uppercase tracking-widest">Please fill in the book information</p>
+
+            <form action="/book" method="POST" enctype="multipart/form-data" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Book Title</label>
+                        <input type="text" name="title" required class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Author</label>
+                        <input type="text" name="author" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Genre</label>
+                        <select name="genre" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none bg-white font-bold text-gray-700">
+                            <% genres.forEach(g => { %>
+                                <option value="<%= g %>"><%= g %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Sub-Genre</label>
+                        <input type="text" name="subgenre" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Publish Year</label>
+                        <input type="number" name="year" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Page Count</label>
+                        <input type="number" name="page" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Price ($)</label>
+                        <input type="number" step="0.01" name="price" required class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Inventory Stock</label>
+                        <input type="number" name="stock" min="0" value="0" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Average Rating (0-5)</label>
+                        <input type="number" step="0.1" name="avgRating" min="0" max="5" value="0" class="border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Book Cover</label>
+                        <input type="file" name="photo" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer">
+                    </div>
+                </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Description</label>
+                        <textarea name="description" rows="4" class="border-2 border-gray-100 rounded-xl p-4 focus:border-blue-500 outline-none font-medium text-gray-600"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-6 border-t border-gray-50">
+                    <button type="submit" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-100 flex items-center gap-2">
+                        <i class="pi pi-check"></i> Send Data
+                    </button>
+                    <button type="reset" class="bg-gray-100 text-gray-500 px-10 py-4 rounded-2xl font-bold text-sm hover:bg-gray-200 transition">
+                        <i class="pi pi-refresh"></i> Clear Form
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Check for 'status' in URL (Success case)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'success') {
+            Swal.fire({
+                title: 'Success!',
+                text: 'The book has been added to the library.',
+                icon: 'success',
+                confirmButtonColor: '#2563eb'
+            }).then(() => {
+                // Clean up the URL after showing alert
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+        }
+
+        const serverError = "<%= typeof error !== 'undefined' ? error : '' %>";
+
+        if (serverError) {
+            Swal.fire({
+                title: 'Error!',
+                text: serverError,
+                icon: 'error',
+                confirmButtonColor: '#2563eb'
+            });
+        }
+    </script>
+</body>
+</html>

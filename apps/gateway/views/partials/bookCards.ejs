@@ -1,0 +1,105 @@
+<% if (typeof books !== 'undefined' && books.length > 0) { %>
+    <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest">
+            Total Results: <span class="text-blue-600"><%= pagination.totalItems %></span> Books
+        </h2>
+    </div>
+
+    <div class="divide-y divide-gray-50">
+        <% books.forEach(book => { %>
+            <div class="group flex flex-col md:flex-row p-8 hover:bg-blue-50/30 transition duration-300 items-center gap-10">
+                <div class="relative shrink-0">
+                    <img src="/book/image/<%= book.productId %>" alt="<%= book.title %>"
+                         class="w-32 h-44 object-cover rounded-xl shadow-lg group-hover:shadow-2xl group-hover:-translate-y-1 transition duration-300">
+                </div>
+                
+                <div class="flex-1 text-center md:text-left">
+                    <h3 class="text-2xl font-bold text-gray-900">
+                        <a href="/book/view/<%= book.productId %>" class="hover:text-blue-600 transition">
+                            <%= book.title %>
+                        </a>
+                    </h3>
+                    <p class="text-gray-500 mt-2 text-lg">
+                        by <span class="font-semibold text-gray-800"><%= book.author %></span>
+                    </p>
+                    
+                    <div class="flex items-center justify-center md:justify-start gap-4 mt-4">
+                        <div class="text-2xl font-black text-red-600">$<%= Number(book.price).toFixed(2) %></div>
+                        <div class="h-4 w-px bg-gray-200"></div>
+                        <div class="flex items-center gap-1 text-yellow-400">
+                            <% for(let i = 1; i <= 5; i++) { %>
+                                <i class="pi <%= i <= Math.round(book.avgRating) ? 'pi-star-fill' : 'pi-star' %> text-sm"></i>
+                            <% } %>
+                            <span class="text-gray-400 text-xs ml-1">(<%= book.avgRating || '0.0' %>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex flex-col items-center px-10 border-x border-gray-100">
+                    <div class="text-gray-400 text-sm mb-2"><i class="pi pi-calendar mr-1"></i><%= book.year %></div>
+                    <div class="text-gray-400 text-sm"><i class="pi pi-tag mr-1"></i><%= book.genre %></div>
+                </div>
+
+                <div class="shrink-0">
+                    <% if (typeof user !== 'undefined' && user && user.DTYPE === 'Employee') { %>
+                        <a href="/book/edit-view/<%= book.productId %>" 
+                        class="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100">
+                            Edit Book <i class="pi pi-pencil text-xs"></i>
+                        </a>
+                    <% } else { %>
+                        <a href="/book/view/<%= book.productId %>" 
+                        class="inline-flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-full font-bold hover:bg-blue-600 transition">
+                            View Book <i class="pi pi-arrow-right text-xs"></i>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <% if (typeof pagination !== 'undefined' && pagination.total > 1) { %>
+        <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-center items-center gap-4">
+            
+            <% if (pagination.current > 1) { %>
+                <button type="button" onclick="changePage(<%= pagination.current - 1 %>)"
+                    class="p-2 text-gray-400 hover:text-blue-600 transition">
+                    <i class="pi pi-chevron-left"></i>
+                </button>
+            <% } %>
+
+            <div class="flex items-center gap-1">
+                <% 
+                   let start = Math.max(1, pagination.current - 2);
+                   let end = Math.min(pagination.total, start + 4);
+                   if (end - start < 4) start = Math.max(1, end - 4);
+                %>
+                <% for(let i = start; i <= end; i++) { %>
+                    <button type="button" onclick="changePage(<%= i %>)"
+                        class="w-9 h-9 flex items-center justify-center rounded-lg text-xs font-bold transition
+                        <%= i === pagination.current 
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'bg-white border border-gray-200 text-gray-600 hover:border-blue-500 hover:text-blue-600' %>">
+                        <%= i %>
+                    </button>
+                <% } %>
+            </div>
+
+            <% if (pagination.current < pagination.total) { %>
+                <button type="button" onclick="changePage(<%= pagination.current + 1 %>)"
+                    class="p-2 text-gray-400 hover:text-blue-600 transition">
+                    <i class="pi pi-chevron-right"></i>
+                </button>
+            <% } %>
+
+            <span class="ml-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Page <%= pagination.current %> of <%= pagination.total %>
+            </span>
+        </div>
+    <% } %>
+
+<% } else { %>
+    <div class="text-center py-32 text-gray-400">
+        <i class="pi pi-search text-5xl mb-4"></i>
+        <p>No books found.</p>
+    </div>
+<% } %>

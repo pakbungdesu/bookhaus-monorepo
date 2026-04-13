@@ -1,0 +1,192 @@
+
+services:
+  # --- INFRASTRUCTURE ---
+  redis:
+    image: redis:alpine
+    container_name: bookhaus-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - bookhaus-network
+    restart: always
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: bookhaus-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=bookhaus_db
+    ports:
+      - "3307:3306"
+    networks:
+      - bookhaus-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- GATEWAY ---
+  gateway:
+    build:
+      context: .
+      dockerfile: ./apps/gateway/Dockerfile
+    container_name: bookhaus-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+      - AUTH_HOST=auth-service
+      - INVENTORY_HOST=inventory-service
+      - ORDER_HOST=order-service
+      - FAVORITE_HOST=favorite-service
+      - INFO_HOST=info-service
+      - CUSTOMER_HOST=customer-service # <--- Added
+    depends_on:
+      redis:
+        condition: service_started
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- AUTH SERVICE (8001) ---
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+    container_name: bookhaus-auth
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- INVENTORY SERVICE (8002) ---
+  inventory-service:
+    build:
+      context: .
+      dockerfile: ./apps/inventory-service/Dockerfile
+    container_name: bookhaus-inventory
+    ports:
+      - "8002:8002"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- ORDER SERVICE (8003) ---
+  order-service:
+    build:
+      context: .
+      dockerfile: ./apps/order-service/Dockerfile
+    container_name: bookhaus-order
+    ports:
+      - "8003:8003"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+      - INVENTORY_HOST=inventory-service
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- CUSTOMER SERVICE (8004) ---
+  customer-service:
+    build:
+      context: .
+      dockerfile: ./apps/customer-service/Dockerfile
+    container_name: bookhaus-customer
+    ports:
+      - "8004:8004"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- INFO SERVICE (8005) ---
+  info-service:
+    build:
+      context: .
+      dockerfile: ./apps/info-service/Dockerfile
+    container_name: bookhaus-info
+    ports:
+      - "8005:8005"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  # --- FAVORITE SERVICE (8006) ---
+  favorite-service:
+    build:
+      context: .
+      dockerfile: ./apps/favorite-service/Dockerfile
+    container_name: bookhaus-favorite
+    ports:
+      - "8006:8006"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+      - INVENTORY_HOST=inventory-service
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+# --- EMPLOYEE SERVICE (8007) ---
+  employee-service:
+    build:
+      context: .
+      dockerfile: ./apps/employee-service/Dockerfile
+    container_name: bookhaus-employee
+    ports:
+      - "8007:8007"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=bookhaus_db
+      - DB_USER=root
+      - DB_PASSWORD=admin
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+networks:
+  bookhaus-network:
+    driver: bridge

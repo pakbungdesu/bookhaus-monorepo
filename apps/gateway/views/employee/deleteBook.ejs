@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Delete Book | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 antialiased">
+    <%- include('../partials/navbar') %>
+<main class="max-w-2xl mx-auto py-20 px-6">
+    <div class="bg-white rounded-3xl shadow-sm border border-red-50 p-10 text-center">
+        <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="pi pi-exclamation-triangle text-4xl"></i>
+        </div>
+        
+        <h1 class="text-2xl font-black tracking-tighter text-gray-800 mb-2">Delete Confirmation</h1>
+        <p class="text-gray-500 mb-8 font-medium">Are you sure you want to permanently delete <br>
+            <span class="text-gray-800 font-black italic">"<%= book.title %>"</span>?
+        </p>
+
+        <div class="bg-gray-50 rounded-2xl p-6 mb-8 flex items-center gap-4 text-left">
+            <img src="/book/image/<%= book.productId %>" class="w-12 h-16 object-cover rounded shadow-sm">
+            <div>
+                <p class="text-sm font-black text-gray-800"><%= book.title %></p>
+                <p class="text-xs font-bold text-gray-400">By <%= book.author %></p>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <button onclick="confirmDelete()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition shadow-lg shadow-red-100">
+                Yes, Delete Book
+            </button>
+            <a href="/book/editBook" class="w-full bg-gray-100 text-gray-500 py-4 rounded-2xl font-black text-sm hover:bg-gray-200 transition">
+                No, Keep It
+            </a>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+async function confirmDelete() {
+    try {
+        const res = await fetch('/book/<%= book.productId %>', {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            Swal.fire('Deleted!', 'The book has been removed.', 'success')
+                .then(() => window.location.href = '/book/editBook');
+        } else {
+            throw new Error();
+        }
+    } catch (err) {
+        Swal.fire('Error', 'Failed to delete record.', 'error');
+    }
+}
+</script>
+</body>
+</html>

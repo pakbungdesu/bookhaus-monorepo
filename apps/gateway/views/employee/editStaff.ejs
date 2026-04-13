@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Staff | Bookhaus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-50 antialiased font-sans">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-2xl mx-auto py-16 px-6">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            
+            <div class="bg-gray-50/50 border-b border-gray-100 px-10 py-6">
+                <h2 class="text-3xl font-bold tracking-tighter text-gray-800">
+                    Edit Staff Member: <%= employee.person?.firstname %>
+                </h2>
+            </div>
+
+            <form action="/employee/update/<%= employee.id %>" method="POST" class="p-10 space-y-8">
+                
+                <div class="space-y-4 pb-6 border-b border-gray-50">
+                    <div class="flex items-center">
+                        <label class="w-32 text-xs font-bold uppercase text-gray-400">Staff ID</label>
+                        <span class="font-mono font-bold text-blue-600">#<%= employee.id %></span>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="w-32 text-xs font-bold uppercase text-gray-400">Full Name</label>
+                        <span class="font-bold text-gray-700">
+                            <%= employee.person?.firstname %> <%= employee.person?.lastname %>
+                        </span>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="w-32 text-xs font-bold uppercase text-gray-400">Email</label>
+                        <span class="text-gray-500"><%= employee.email %></span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex flex-col gap-2">
+                        <label for="pos" class="text-xs font-bold uppercase text-gray-400 tracking-widest">Position</label>
+                        <select id="pos" name="position" 
+                                class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 focus:ring-0 outline-none transition font-bold text-gray-700">
+                            <option value="Salesclerk" <%= employee.position === 'Salesclerk' ? 'selected' : '' %>>Sales Clerk</option>
+                            <option value="Delivery" <%= employee.position === 'Delivery' ? 'selected' : '' %>>Delivery</option>
+                            <option value="Manager" <%= employee.position === 'Manager' ? 'selected' : '' %>>Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="sal" class="text-xs font-bold uppercase text-gray-400 tracking-widest">Monthly Salary ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/4 text-gray-400 font-bold">$</span>
+                            <input type="number" id="sal" name="salary" step="0.01" 
+                                   value="<%= employee.salary %>"
+                                   class="w-full border-2 border-gray-100 rounded-xl p-3 pl-8 focus:border-blue-500 focus:ring-0 outline-none transition font-bold text-gray-700">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="hire" class="text-xs font-bold uppercase text-gray-400 tracking-widest">Hire Date</label>
+                        <input type="date" id="hire" name="hiredate" 
+                               value="<%= new Date(employee.hiredate).toISOString().split('T')[0] %>"
+                               class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 focus:ring-0 outline-none transition font-bold text-gray-700">
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-gray-100 flex items-center justify-between">
+                    <a href="/employee/staff" class="text-base font-bold text-gray-400 hover:text-gray-600 transition flex items-center gap-2">
+                        <i class="pi pi-arrow-left"></i> Back to Directory
+                    </a>
+                    
+                    <div class="flex gap-3">
+                        <a href="/employee/staff" class="px-6 py-3 rounded-xl font-bold text-base text-gray-500 bg-gray-100 hover:bg-gray-200 transition">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-8 py-3 rounded-xl font-bold text-base text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                            <i class="pi pi-save"></i> Update Information
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

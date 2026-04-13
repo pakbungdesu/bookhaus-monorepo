@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <style>
+        /* Logic for Print vs Screen */
+        @media screen {
+            .print-only { display: none !important; }
+        }
+
+        @media print {
+            .no-print, nav, footer { display: none !important; }
+            .print-only { 
+                display: block !important; 
+                position: absolute; 
+                top: 0; 
+                left: 0; 
+                width: 100%; 
+            }
+            body { background: white !important; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-4xl mx-auto px-4 py-12 no-print">
+        <% if (typeof customer !== 'undefined') { %>
+            <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                My Profile <span class="text-xl grayscale opacity-70">👤</span>
+            </h1>
+
+            <div class="flex border-b border-gray-200 mb-6 gap-8">
+                <button onclick="switchTab(event, 'details')" id="defaultTab"
+                    class="tab-btn pb-4 px-1 text-sm font-semibold border-b-2 transition duration-300 border-black text-black">
+                    Account Details
+                </button>
+                <button onclick="switchTab(event, 'history')"
+                    class="tab-btn pb-4 px-1 text-sm font-semibold border-b-2 transition duration-300 border-transparent text-gray-500 hover:text-gray-700">
+                    Order History
+                </button>
+            </div>
+
+            <div id="details" class="tab-content block">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Full Name</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.firstname %> <%= customer.person?.lastname %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Email Address</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.email %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Birthday</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.birthdate ? new Date(customer.person.birthdate).toISOString().split('T')[0] : '' %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Gender</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.gender %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Shipping Address</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.address %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Phone</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.person?.phone %></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 pt-8 border-t border-gray-50 flex flex-wrap gap-4">
+                        <a href="/customer/editProfile" class="inline-flex items-center gap-2 px-6 py-2.5 border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
+                            <i class="pi pi-user-edit"></i> Edit Profile
+                        </a>
+                        <form action="/auth/logout" method="POST">
+                            <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
+                                <i class="pi pi-sign-out"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history" class="tab-content hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Order ID</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-center">Status</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Actions / Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            <% if (orderHistory && orderHistory.length > 0) { %>
+                                <% orderHistory.forEach(order => { %>
+                                    <tr id="order-row-<%= order.orderId %>" class="hover:bg-gray-50 transition">
+                                        <td class="px-6 py-4 font-bold text-blue-600">#<%= order.orderId %></td>
+                                        <td class="px-6 py-4 text-gray-600 text-sm">
+                                            <%= new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <% 
+                                                let sc = ''; 
+                                                switch(order.status) {
+                                                    case 'Pending': sc = 'bg-amber-100 text-amber-700'; break;
+                                                    case 'Paid': sc = 'bg-blue-100 text-blue-700'; break;
+                                                    case 'Shipped': sc = 'bg-purple-100 text-purple-700'; break;
+                                                    case 'Completed': sc = 'bg-green-100 text-green-700'; break;
+                                                    default: sc = 'bg-gray-100 text-gray-700';
+                                                }
+                                            %>
+
+                                            <span id="status-badge-<%= order.orderId %>" 
+                                                class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest <%= sc %>">
+                                                <%= order.status %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div id="actions-<%= order.orderId %>" class="flex items-center justify-end gap-3">
+                                                <% if (order.status === 'Pending') { %>
+                                                    <a href="/order/cart" class="px-3 py-1 bg-amber-600 text-white text-[10px] font-bold rounded-lg hover:bg-amber-700">
+                                                        Pay Now
+                                                    </a>
+                                                <% } else if (order.status === 'Shipped') { %>
+                                                    <button onclick="confirmReceived('<%= order.orderId %>')" 
+                                                            class="received-btn px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-lg hover:bg-purple-700">
+                                                        Received?
+                                                    </button>
+                                                <% } %>
+                                                
+                                                <% if (['Paid', 'Shipped', 'Completed'].includes(order.status)) { %>
+                                                    <button onclick="prepareAndPrintInvoice('<%= JSON.stringify(order).replace(/'/g, "\\'") %>')" 
+                                                            class="text-gray-400 hover:text-blue-600 transition">
+                                                        <i class="pi pi-print"></i>
+                                                    </button>
+                                                <% } %>
+                                                <span class="font-bold text-gray-900">$<%= (Number(order.orderTotal) || 0).toFixed(2) %></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400 italic">No orders found.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="text-center py-20 bg-white rounded-2xl border">
+                <i class="pi pi-lock text-4xl text-gray-300 mb-4"></i>
+                <h2 class="text-xl font-bold">Access Denied</h2>
+                <a href="/auth/loginCus" class="text-blue-600 hover:underline mt-4 inline-block">Login to your account</a>
+            </div>
+        <% } %>
+    </div>
+
+    <div id="global-invoice-print" class="print-only p-10 bg-white text-gray-900">
+        <div class="flex justify-between items-start border-b-2 border-gray-100 pb-8 mb-8">
+            <div>
+                <h1 class="text-4xl font-black text-blue-600 tracking-tighter">BOOKHAUS.</h1>
+                <p id="inv-cust-email" class="text-gray-400 text-sm mt-1"></p>
+                <p class="text-gray-400 text-sm">support@bookhaus.com</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-2xl font-bold uppercase tracking-widest">Official Receipt</h2>
+                <p class="text-gray-500">Order ID: <span id="inv-order-id" class="text-black font-mono"></span></p>
+                <p class="text-gray-500">Status: <span id="inv-status" class="font-bold"></span></p>
+                <p class="text-gray-500">Date: <span id="inv-date"></span></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-12 mb-10 text-sm">
+            <div>
+                <h3 class="font-bold text-gray-400 uppercase mb-2">Billed To:</h3>
+                <p id="inv-cust-name" class="font-bold text-lg"></p>
+                <p id="inv-cust-phone" class="text-gray-600"></p>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-400 uppercase mb-2">Shipping Address:</h3>
+                <p id="inv-cust-address" class="text-gray-700"></p>
+            </div>
+        </div>
+
+        <table class="w-full mb-10 text-sm">
+            <thead class="bg-gray-50 border-y border-gray-100">
+                <tr class="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <th class="px-4 py-3 text-left">Item Name</th>
+                    <th class="px-4 py-3 text-center">Qty</th>
+                    <th class="px-4 py-3 text-right">Price</th>
+                    <th class="px-4 py-3 text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody id="inv-items-body" class="divide-y divide-gray-50"></tbody>
+        </table>
+
+        <div class="flex justify-end pt-6 border-t-2 border-gray-900">
+            <div class="w-48 text-right space-y-2">
+                <p class="text-gray-500 text-xs uppercase font-bold tracking-widest">Amount Paid</p>
+                <p id="inv-grand-total" class="text-3xl font-black text-blue-600"></p>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('border-black', 'text-black');
+                b.classList.add('border-transparent', 'text-gray-500');
+            });
+            event.currentTarget.classList.add('border-black', 'text-black');
+        }
+
+        // Confirm Received Logic
+        async function confirmReceived(orderId) {
+            if (!confirm('Confirm you have received this order?')) return;
+
+            // 1. Get the button to show loading state
+            const actionContainer = document.getElementById(`actions-${orderId}`);
+            const button = actionContainer.querySelector('.received-btn');
+            const originalContent = button.innerHTML;
+            
+            button.disabled = true;
+            button.innerHTML = '<i class="pi pi-spin pi-spinner"></i>';
+
+            try {
+                const res = await fetch(`/order/update-status/${orderId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Completed' })
+                });
+
+                if (res.ok) {
+                    // 2. Update the Status Badge visually
+                    const badge = document.getElementById(`status-badge-${orderId}`);
+                    badge.innerText = 'Completed';
+                    
+                    // Remove old colors and add green
+                    badge.className = 'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-100 text-green-700';
+
+                    // 3. Remove the "Received?" button from the action container
+                    if (button) button.remove();
+                    
+                    // 4. Ensure the print button exists (in case it wasn't there for some reason)
+                    // If the order was shipped, the print button should already be there based on your EJS logic.
+                    
+                    console.log(`Order ${orderId} marked as completed.`);
+                } else {
+                    alert('Failed to update order status.');
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                }
+            } catch (err) {
+                console.error('AJAX Error:', err);
+                alert('Connection error.');
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+
+        // Invoice Preparation and Printing
+        function prepareAndPrintInvoice(orderJson) {
+            const order = JSON.parse(orderJson);
+            const customer = <%- JSON.stringify(customer) %>;
+
+            // Header & Customer Info
+            document.getElementById('inv-order-id').innerText = `#${order.orderId}`;
+            document.getElementById('inv-status').innerText = order.status;
+            document.getElementById('inv-date').innerText = new Date(order.orderDate).toLocaleDateString();
+            document.getElementById('inv-cust-name').innerText = `${customer.person.firstname} ${customer.person.lastname}`;
+            document.getElementById('inv-cust-email').innerText = customer.person.email;
+            document.getElementById('inv-cust-phone').innerText = customer.person.phone;
+            document.getElementById('inv-cust-address').innerText = customer.person.address;
+
+            // Fill Items
+            const tbody = document.getElementById('inv-items-body');
+            tbody.innerHTML = '';
+            order.orderDetails.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-4 py-4 font-semibold">${item.book?.title || 'Unknown Book'}</td>
+                        <td class="px-4 py-4 text-center">${item.quantity}</td>
+                        <td class="px-4 py-4 text-right">$${Number(item.unitPrice || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-right font-bold">$${(item.quantity * (item.unitPrice || 0)).toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('inv-grand-total').innerText = `$${(Number(order.orderTotal) || 0).toFixed(2)}`;
+            window.print();
+        }
+    </script>
+</body>
+</html>

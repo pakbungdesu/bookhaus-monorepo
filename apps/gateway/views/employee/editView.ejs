@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Book | Bookhaus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-50 antialiased font-sans">
+    <%- include('../partials/navbar') %>
+<main class="max-w-4xl mx-auto py-12 px-6">
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-10">
+        <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tighter text-gray-800">Edit Book Details</h1>
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Modifying SKU: #<%= book.productId %></p>
+            </div>
+            <img src="/book/image/<%= book.productId %>" class="w-20 h-24 object-cover rounded-xl shadow-md border-2 border-white">
+        </div>
+
+        <form id="editForm" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Title</label>
+                    <input type="text" id="title" value="<%= book.title %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Author</label>
+                    <input type="text" id="author" value="<%= book.author %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Genre</label>
+                    <select id="genre" class="border-2 border-gray-50 rounded-xl p-3 outline-none bg-white font-bold text-gray-700 transition">
+                        <% genres.forEach(g => { %>
+                            <option value="<%= g %>" <%= book.genre === g ? 'selected' : '' %>><%= g %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Sub-Genre</label>
+                    <input type="text" id="subgenre" value="<%= book.subgenre %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Publish Year</label>
+                    <input type="number" id="year" value="<%= book.year %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Page Count</label>
+                    <input type="number" id="page" value="<%= book.page %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Price ($)</label>
+                    <input type="number" id="price" step="0.01" value="<%= book.price %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Stock Inventory</label>
+                    <input type="number" id="stock" value="<%= book.stock %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Avg Rating (0.0 - 5.0)</label>
+                    <input type="number" id="avgRating" step="0.1" min="0" max="5" value="<%= book.avgRating %>" class="border-2 border-gray-50 rounded-xl p-3 outline-none focus:border-blue-500 font-bold text-gray-700 transition">
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase text-gray-400 tracking-widest">Description</label>
+                <textarea id="description" rows="5" class="border-2 border-gray-50 rounded-xl p-4 outline-none focus:border-blue-500 font-medium text-gray-600 transition"><%= book.description %></textarea>
+            </div>
+
+            <div class="flex gap-4 pt-6 border-t border-gray-50">
+                <button type="button" onclick="handleUpdate()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-base hover:bg-blue-700 transition shadow-lg shadow-blue-100 flex items-center gap-2">
+                    <i class="pi pi-save"></i> Save Changes
+                </button>
+
+                <button type="button" onclick="handleDelete()" class="bg-red-50 text-red-600 px-8 py-4 rounded-2xl font-bold text-base hover:bg-red-100 transition flex items-center gap-2 border border-red-100">
+                    <i class="pi pi-trash"></i> Delete Book
+                </button>
+                <a href="/book/editBook" class="bg-gray-100 text-gray-500 px-10 py-4 rounded-2xl font-bold text-base hover:bg-gray-200 transition">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+async function handleDelete() {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626', // red-600
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const res = await fetch('/book/<%= book.productId %>', {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                await Swal.fire({
+                    title: 'Deleted!',
+                    text: 'The book has been removed.',
+                    icon: 'success',
+                    confirmButtonColor: '#2563eb'
+                });
+                window.location.href = '/book/editBook';
+            } else {
+                throw new Error();
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Could not delete book.', 'error');
+        }
+    }
+}
+
+async function handleUpdate() {
+    // Collect all fields into the data object
+    const data = {
+        title: document.getElementById('title').value,
+        author: document.getElementById('author').value,
+        genre: document.getElementById('genre').value,
+        subgenre: document.getElementById('subgenre').value,
+        year: parseInt(document.getElementById('year').value) || 0,
+        page: parseInt(document.getElementById('page').value) || 0,
+        stock: parseInt(document.getElementById('stock').value) || 0,
+        avgRating: parseFloat(document.getElementById('avgRating').value) || 0,
+        price: parseFloat(document.getElementById('price').value) || 0,
+        description: document.getElementById('description').value
+    };
+
+    try {
+        const res = await fetch('/book/<%= book.productId %>', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            Swal.fire({
+                title: 'Updated!',
+                text: 'Book information saved successfully.',
+                icon: 'success',
+                confirmButtonColor: '#2563eb'
+            }).then(() => window.location.href = '/book/editBook');
+        } else {
+            throw new Error();
+        }
+    } catch (err) {
+        Swal.fire('Error', 'Could not update book. Please check your data.', 'error');
+    }
+}
+</script>
+</body>
+</html>

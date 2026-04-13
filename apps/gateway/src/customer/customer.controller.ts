@@ -1,0 +1,107 @@
+import { 
+  Controller, Get, Post, Body, Param, Patch, Delete, 
+  UseGuards, Render, Req, Res, Inject, UnauthorizedException 
+} from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard, Roles, RolesGuard } from '@app/shared';
+
+@Controller('customer')
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class CustomerController {
+ constructor(
+    @Inject('CUSTOMER_SERVICE') private readonly customerClient: ClientProxy,
+    @Inject('ORDER_SERVICE') private readonly orderClient: ClientProxy,
+  ) {}
+
+  @Get('profile')
+  @Roles('Customer')
+  @Render('customer/profileCus')
+  async getProfile(@Req() req) {
+    const customerId = Number(req.user?.sub);
+    if (!customerId) throw new UnauthorizedException();
+
+    const [customer, orderHistory] = await Promise.all([
+      firstValueFrom(this.customerClient.send({ cmd: 'find_one_customer' }, customerId)),
+      firstValueFrom(this.orderClient.send({ cmd: 'find_by_customer' }, customerId)).catch(() => [])
+    ]);
+
+    console.log(customer);
+
+    return { 
+      customer, 
+      orderHistory: orderHistory || [], 
+      user: req.user 
+    };
+  }
+
+  @Get('records')
+  @Roles('Manager')
+  @Render('employee/customerRecords')
+  async getCustomerRecords(@Req() req) {
+    // 1. Get all customers
+    const customers = await firstValueFrom(
+      this.customerClient.send({ cmd: 'find_all_customers' }, {})
+    );
+
+    // 2. Get all orders from the Order Microservice
+    const allOrders = await firstValueFrom(
+      this.orderClient.send({ cmd: 'find_all_orders' }, {})
+    ).catch(() => []);
+
+    // 3. Map order counts to customers
+    const customersWithCounts = customers.map(cus => {
+      const customerOrders = allOrders.filter(ord => ord.customerId === cus.id);
+      return {
+        ...cus,
+        orderCount: customerOrders.length
+      };
+    });
+
+    return { 
+      customers: customersWithCounts, 
+      user: req.user 
+    };
+  }
+
+  @Get('editProfile')
+  @Roles('Customer')
+  @Render('customer/updateProfile')
+  async getUpdateProfile(@Req() req){
+    const customerId = Number(req.user?.sub);
+    if (!customerId) throw new UnauthorizedException('Please log in again.');
+
+    const customer = await firstValueFrom(
+      this.customerClient.send({ cmd: 'find_one_customer' }, customerId)
+    );
+
+    return { 
+      customer, 
+      user: req.user 
+    };
+  }
+
+  @Post('updateProfile')
+  @Roles('Customer')
+  async updateProfile(@Body() updateData: any, @Req() req, @Res() res) {
+    const userId = Number(req.user.sub);
+    await firstValueFrom(
+      this.customerClient.send({ cmd: 'update_customer' }, { id: userId, dto: updateData })
+    );
+    return res.redirect('/customer/profile');
+  }
+
+  @Delete(':id')
+  @Roles('Manager')
+  async remove(@Param('id') id: string) {
+    return this.customerClient.send({ cmd: 'delete_customer' }, +id);
+  }
+
+  @Get(':id')
+  @Roles('Employee', 'Manager')
+  async findOne(@Param('id') id: string) {
+    return await firstValueFrom(
+      this.customerClient.send({ cmd: 'find_one_customer' }, +id)
+    );
+  }
+}

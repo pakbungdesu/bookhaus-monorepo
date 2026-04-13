@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Profile | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-3xl mx-auto py-16 px-6">
+        <div class="bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden">
+            <div class="bg-gray-900 p-5 text-white">
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    Employee Profile <i class="pi pi-info-circle"></i>
+                </h1>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Full Name</label>
+                        <p class="text-lg text-gray-700">
+                            <%= employee.person?.firstname %> <%= employee.person?.lastname %>
+                        </p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Position</label>
+                        <p class="text-lg text-gray-700"><%= employee.position %></p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Gender</label>
+                        <p class="text-lg text-gray-700"><%= employee.person?.gender %></p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Email Address</label>
+                        <p class="text-lg text-gray-700"><%= employee.person?.email %></p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Phone</label>
+                        <p class="text-lg text-gray-700"><%= employee.person?.phone %></p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Address</label>
+                        <p class="text-lg text-gray-700"><%= employee.person?.address %></p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Salary</label>
+                        <p class="text-lg text-green-600 font-bold">
+                            $<%= Number(employee.salary).toLocaleString() %>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Birthday</label>
+                        <p class="text-lg text-gray-700">
+                            <%= new Date(employee.person.birthdate).toLocaleDateString('en-GB') %>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Hire Date</label>
+                        <p class="text-lg text-gray-700">
+                            <%= new Date(employee.hiredate).toLocaleDateString('en-GB') %>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex justify-center gap-4">
+                    <a href="/employee/updateProfile" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">
+                        <i class="pi pi-user-edit mr-2"></i> Edit Profile
+                    </a>
+                    <form action="/auth/logout" method="POST">
+                        <button class="px-8 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-600 hover:text-white transition">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

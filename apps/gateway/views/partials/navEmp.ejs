@@ -1,0 +1,52 @@
+
+<nav class="bg-white border-b border-gray-200 px-6 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="hidden md:flex items-center gap-6">
+            <a href="/info/home" class="text-gray-600 hover:text-black flex items-center gap-2 text-base font-medium py-5">
+                <i class="pi pi-home"></i> Home
+            </a>
+            <div class="relative group">
+                <button class="text-gray-600 hover:text-black flex items-center gap-2 text-base font-medium py-5">
+                    <i class="pi pi-book"></i> Inventory <i class="pi pi-chevron-down text-[10px]"></i>
+                </button>
+                <div class="absolute hidden group-hover:block bg-white border border-gray-100 shadow-xl rounded-xl py-2 w-48 left-0 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <a href="/book/addBook" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                        <i class="pi pi-plus mr-2 text-xs"></i> Add New Book
+                    </a>
+                    <a href="/book/editBook" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                        <i class="pi pi-file-edit mr-2 text-xs"></i> Edit Books
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative group">
+                <button class="text-gray-600 hover:text-black flex items-center gap-2 text-base font-medium py-5">
+                    <i class="pi pi-shopping-cart"></i> Sales <i class="pi pi-chevron-down text-[10px]"></i>
+                </button>
+                <div class="absolute hidden group-hover:block bg-white border border-gray-100 shadow-xl rounded-xl py-2 w-48 left-0">
+                    <a href="/order/active" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Active Orders</a>
+                    <% if (user && user.position === 'Manager') { %>
+                        <a href="/order/completed" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Sales History</a>
+                    <% } %>
+                </div>
+            </div>
+
+            <% if (user && user.position === 'Manager') { %>
+            <div class="relative group">
+                <button class="text-gray-600 hover:text-black flex items-center gap-2 text-base font-medium py-5">
+                    <i class="pi pi-users"></i> People <i class="pi pi-chevron-down text-[10px]"></i>
+                </button>
+                <div class="absolute hidden group-hover:block bg-white border border-gray-100 shadow-xl rounded-xl py-2 w-48 left-0">
+                    <a href="/employee/staff" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Staff Directory</a>
+                    <a href="/customer/records" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Customer Records</a>
+                </div>
+            </div>
+            <% } %>
+        </div>
+
+            <a href="/employee/profile" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2">
+                <i class="pi pi-user"></i> Profile
+            </a>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,23 @@
+   /* Normal State */
+    body .ui-button.ui-button-success {
+        background-color: #00865a !important;
+        border-color: #00865a !important;
+        color: #ffffff !important;
+    }
+
+    /* Hover State */
+    body .ui-button.ui-button-success:hover {
+        background-color: #006d49 !important;
+        border-color: #1e7e34 !important;
+    }
+
+    /* Focus/Active State */
+    body .ui-button.ui-button-success:focus {
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5) !important;
+    }
+    
+    body .ui-tag.ui-tag-success {
+        background: #00865a !important;
+        color: #ffffff !important;     
+        border: 1px solid #1e7e34;
+    }

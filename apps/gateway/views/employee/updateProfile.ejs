@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Profile | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 antialiased text-gray-900">
+    <%- include('../partials/navbar') %>
+
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <div class="bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden">
+            <div class="bg-blue-600 p-8 text-white">
+                <h1 class="text-2xl font-bold tracking-tight flex items-center gap-3">
+                    <i class="pi pi-user-edit"></i> Edit Account Details
+                </h1>
+                <p class="text-blue-100 mt-1 text-sm font-medium">Update your personal information below.</p>
+            </div>
+
+            <form action="/employee/editProfile" method="POST" class="p-8 space-y-6">
+                <input type="hidden" name="id" value="<%= employee.person?.id %>">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">First Name</label>
+                        <input type="text" name="firstname" value="<%= employee.person?.firstname %>" required 
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Last Name</label>
+                        <input type="text" name="lastname" value="<%= employee.person?.lastname %>" required 
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Birthday</label>
+                        <input type="date" name="birthdate" value="<%= employee.person?.birthdate %>"
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Gender</label>
+                        <div class="flex gap-6 mt-2">
+                            <% ['Female', 'Male', 'Other'].forEach(g => { %>
+                                <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700">
+                                    <input type="radio" name="gender" value="<%= g %>" <%= employee.person?.gender === g ? 'checked' : '' %> class="w-4 h-4 accent-blue-600">
+                                    <%= g %>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Email Address</label>
+                        <input type="email" name="email" value="<%= employee.person?.email %>" required 
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Phone</label>
+                        <input type="text" name="phone" value="<%= employee.person?.phone %>" 
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+
+                    <div class="flex flex-col md:col-span-2">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Full Address</label>
+                        <input type="text" name="address" value="<%= employee.person?.address %>" required 
+                            class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 outline-none transition font-medium">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+                    <a href="/employee/profile" class="px-6 py-2.5 text-gray-500 font-semibold hover:text-black transition text-sm">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-8 py-2.5 bg-green-600 text-white rounded-full font-semibold shadow-md shadow-green-100 hover:bg-green-700 transition flex items-center gap-2">
+                        <i class="pi pi-check text-sm"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

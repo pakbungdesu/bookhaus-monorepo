@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Customer Order History | Bookhaus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <style>
+    /* Screen Styles: Hide the invoice template from view */
+    @media screen {
+        #invoice-print-area { display: none !important; }
+    }
+
+    /* Print Styles: Hide UI, show ONLY the invoice */
+    @media print {
+        /* 1. Hide the entire body content */
+        body * { 
+            visibility: hidden; 
+        }
+        
+        /* 2. Make only the invoice area and its children visible */
+        #invoice-print-area, #invoice-print-area * { 
+            visibility: visible; 
+        }
+
+        /* 3. Position the invoice at the very top of the printed page */
+        #invoice-print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: block !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        @page {
+            margin: 15;
+        }
+        body {
+            background-color: white !important;
+        }
+    }
+
+    /* Custom Scrollbar for the table if needed */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; }
+</style>
+</head>
+<body class="bg-gray-50 antialiased font-sans">
+    <%- include('../partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto py-12 px-6">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <a href="/customer/records" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-2 mb-2">
+                    <i class="pi pi-arrow-left text-xs"></i> Back to Customer Management
+                </a>
+                <h1 class="text-4xl font-black tracking-tighter">
+                    Customer Order History ⏳
+                </h1>
+            </div>
+
+            <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-6">
+                <div>
+                    <span class="text-[10px] font-black uppercase text-gray-400 block tracking-widest">Total Spend</span>
+                    <span class="text-xl font-black text-green-600">$<%= totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 }) %></span>
+                </div>
+                <div class="h-8 w-px bg-gray-100"></div>
+                <div>
+                    <span class="text-[10px] font-black uppercase text-gray-400 block tracking-widest">Orders</span>
+                    <span class="text-xl font-black text-gray-700"><%= orderHistory.length %></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase text-gray-400 font-black">
+                    <tr>
+                        <th class="px-8 py-5">Order ID</th>
+                        <th class="px-8 py-5">Date</th>
+                        <th class="px-8 py-5">Status</th>
+                        <th class="px-8 py-5 text-left">Total Amount</th>
+                        <th class="px-8 py-5 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <% if (orderHistory.length === 0) { %>
+                        <tr>
+                            <td colspan="4" class="px-8 py-20 text-center text-gray-400 italic">
+                                No order history found for this account.
+                            </td>
+                        </tr>
+                    <% } %>
+
+                    <% orderHistory.forEach(ord => { %>
+                    <tr class="hover:bg-gray-50/50 transition group">
+                        <td class="px-8 py-5 text-left font-black text-gray-700">
+                            #<%= ord.orderId %>
+                        </td>
+                        <td class="px-8 py-5 text-gray-500 font-medium">
+                            <%= new Date(ord.orderDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                        </td>
+                        <td class="px-8 py-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
+                                <%= ord.status === 'Completed' ? 'bg-green-100 text-green-700' : 
+                                   ord.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' %>">
+                                <%= ord.status %>
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 text-left font-black text-gray-700">
+                            $<%= ord.orderTotal.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+                        </td>
+                        <td class="px-8 py-5 text-center">
+                            <button onclick='prepareAndPrintInvoice(`<%- JSON.stringify(ord).replace(/'/g, "\\'") %>`)' 
+                                    class="text-gray-400 hover:text-blue-600 transition p-2">
+                                <i class="pi pi-print text-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="invoice-print-area" class="hidden print-only p-12 bg-white text-gray-900">
+        <div class="flex justify-between items-start border-b-2 border-gray-900 pb-8 mb-8">
+            <div>
+                <h1 class="text-4xl font-black text-blue-600 tracking-tighter">BOOKHAUS.</h1>
+                <p class="text-gray-400 text-sm mt-1">123 Library Lane, Fiction City, TH</p>
+                <p class="text-gray-400 text-sm">support@bookhaus.com</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-2xl font-bold uppercase tracking-widest">Invoice</h2>
+                <p class="text-gray-500">Order ID: <span id="inv-order-id" class="text-black font-bold"></span></p>
+                <p class="text-gray-500">Date: <span id="inv-date" class="text-black"></span></p>
+                <span id="inv-status" class="inline-block mt-2 px-3 py-1 border-2 border-black rounded-full text-[10px] font-black uppercase"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-12 mb-10">
+            <div>
+                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Billed To:</h3>
+                <p id="inv-cust-name" class="font-bold text-lg"></p>
+                <p id="inv-cust-email" class="text-gray-600"></p>
+                <p id="inv-cust-phone" class="text-gray-600"></p>
+            </div>
+            <div>
+                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Shipping Address:</h3>
+                <p id="inv-cust-address" class="text-gray-700 leading-relaxed"></p>
+            </div>
+        </div>
+
+        <table class="w-full mb-10">
+            <thead>
+                <tr class="bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest">
+                    <th class="px-4 py-3 text-left">Book Title</th>
+                    <th class="px-4 py-3 text-center">Qty</th>
+                    <th class="px-4 py-3 text-right">Unit Price</th>
+                    <th class="px-4 py-3 text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody id="inv-items-body" class="divide-y-2 divide-gray-100">
+                </tbody>
+        </table>
+
+        <div class="flex justify-end pt-6 border-t-4 border-gray-900">
+            <div class="w-64 space-y-3">
+                <div class="flex justify-between text-2xl font-black pt-3">
+                    <span class="uppercase text-sm tracking-widest">Total Paid</span>
+                    <span id="inv-grand-total" class="text-blue-600"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function prepareAndPrintInvoice(orderJson) {
+            const order = JSON.parse(orderJson);
+            const customer = <%- JSON.stringify(customer) %>;
+
+            if (!customer) {
+                alert("Customer data missing.");
+                return;
+            }
+
+            // 1. Map Header & Order Info
+            document.getElementById('inv-order-id').innerText = `#${order.orderId}`;
+            document.getElementById('inv-date').innerText = new Date(order.orderDate).toLocaleDateString('en-GB');
+            
+            const statusEl = document.getElementById('inv-status');
+            statusEl.innerText = order.status;
+            // Apply basic print-friendly styling based on status
+            statusEl.style.color = order.status === 'Completed' ? '#059669' : '#2563eb'; 
+
+            // 2. Map Customer Info
+            document.getElementById('inv-cust-name').innerText = `${customer.person?.firstname} ${customer.person?.lastname}`;
+            document.getElementById('inv-cust-email').innerText = customer.person?.email;
+            document.getElementById('inv-cust-phone').innerText = customer.person?.phone;
+            document.getElementById('inv-cust-address').innerText = customer.person?.address || 'N/A';
+
+            // 3. Populate Table Items
+            const tbody = document.getElementById('inv-items-body');
+            tbody.innerHTML = '';
+            
+            order.orderDetails.forEach(item => {
+                const itemTotal = (item.quantity * Number(item.unitPrice || 0)).toFixed(2);
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100">
+                        <td class="px-4 py-5 font-bold text-gray-900">${item.book?.title || 'Unknown Title'}</td>
+                        <td class="px-4 py-5 text-center">${item.quantity}</td>
+                        <td class="px-4 py-5 text-right">$${Number(item.unitPrice).toFixed(2)}</td>
+                        <td class="px-4 py-5 text-right font-black">$${itemTotal}</td>
+                    </tr>
+                `;
+            });
+
+            // 4. Set Grand Total
+            document.getElementById('inv-grand-total').innerText = `$${Number(order.orderTotal).toFixed(2)}`;
+
+            // 5. Trigger Print
+            window.print();
+        }
+    </script>
+</body>
+</html>

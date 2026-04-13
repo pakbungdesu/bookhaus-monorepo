@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Wishlist | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 antialiased">
+    <script>
+        async function removeFromWishlist(productId) {
+            try {
+                const response = await fetch('/favorite/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const card = document.getElementById(`favorite-card-${productId}`);
+                    
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    card.style.transition = 'all 0.3s ease';
+
+                    setTimeout(() => {
+                        card.remove();
+
+                        const remainingCards = document.querySelectorAll('[id^="favorite-card-"]');
+                        if (remainingCards.length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+
+                } else {
+                    alert(data.message || 'Failed to remove item.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong.');
+            }
+        }
+
+        async function addToCart(productId) {
+            // 1. Get the button for visual feedback (optional)
+            const btn = document.getElementById(`cart-btn-${productId}`);
+            const icon = btn.querySelector('i');
+
+            try {
+                // 2. Send the POST request to your order controller
+                const response = await fetch(`/order/add/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // 3. Success Feedback
+                    // Optional: Change icon to a checkmark briefly
+                    icon.classList.replace('pi-shopping-cart', 'pi-check');
+                    
+                    // 4. Alert the user
+                    alert(data.message || 'Book successfully added to cart!');
+
+                    // Reset icon after 2 seconds
+                    setTimeout(() => {
+                        icon.classList.replace('pi-check', 'pi-shopping-cart');
+                    }, 2000);
+                } else {
+                    // Handle 401 (Unauthorized) or 400 errors
+                    alert(data.message || 'Could not add to cart. Are you logged in?');
+                }
+            } catch (error) {
+                console.error('AJAX Error:', error);
+                alert('A network error occurred. Please try again.');
+            }
+        }
+    </script>
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+            My Wishlist <span class="text-red-500 text-2xl">❤️</span>
+        </h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <% if (favorites && favorites.length > 0) { %>
+                <% favorites.forEach(fav => { %>
+                    <% if (fav.book) { %>
+                        <div id="favorite-card-<%= fav.book.productId %>" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
+                            <div class="h-48 bg-gray-100 flex items-center justify-center">
+                                <% if (fav.book.photo) { %>
+                                    <div class="h-48 bg-gray-100 flex items-center justify-center">
+                                        <img src="/book/image/<%= fav.productId %>" 
+                                            alt="<%= fav.book?.title %>" 
+                                            class="w-full h-full object-cover"
+                                            onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                                    </div>
+                                <% } else { %>
+                                    <i class="pi pi-book text-4xl text-gray-300"></i>
+                                <% } %>
+                            </div>
+                            
+                            <div class="p-4">
+                                <h3 class="font-bold text-gray-900 truncate"><%= fav.book.title %></h3>
+                                <p class="text-sm text-gray-500 mb-4"><%= fav.book.author %></p>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-lg font-bold text-blue-600">
+                                        $<%= fav.book.price ? Number(fav.book.price).toFixed(2) : '0.00' %>
+                                    </span>
+                                    
+                                    <div class="flex gap-2">
+                                        <form action="/order/add/<%= fav.book.productId %>" method="POST" onsubmit="event.preventDefault();">
+                                            <input type="hidden" name="productId" value="<%= fav.book.productId %>">
+                                            <button type="button" 
+                                                    id="cart-btn-<%= fav.book.productId %>"
+                                                    class="p-2 text-green-600 hover:bg-green-50 rounded-full transition"
+                                                    onclick="addToCart('<%= fav.book.productId %>')">
+                                                <i class="pi pi-shopping-cart"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <form action="/favorite/remove" method="POST">
+                                            <input type="hidden" name="productId" value="<%= fav.book.productId %>">
+                                            <button type="button" 
+                                                    onclick="removeFromWishlist('<%= fav.book.productId %>')"
+                                                    class="p-2 text-red-500 hover:bg-red-50 rounded-full transition">
+                                                <i class="pi pi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full py-20 text-center bg-white rounded-2xl border border-dashed border-gray-300">
+                    <p class="text-gray-400">You haven't added any books to your wishlist yet.</p>
+                </div>
+            <% } %>
+        </div>
+        
+    </div>
+</body>
+</html>

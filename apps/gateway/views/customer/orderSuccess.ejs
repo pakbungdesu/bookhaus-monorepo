@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Success | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <style>
+        @media screen {
+            .print-only { display: none; }
+        }
+
+        @media print {
+            .no-print, nav, footer { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 antialiased flex flex-col min-h-screen">
+    <%- include('../partials/navbar') %>
+
+    <div class="flex-grow flex items-center justify-center py-12 px-4 no-print">
+        <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-10 text-center">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="pi pi-check-circle text-5xl"></i>
+            </div>
+            <h1 class="text-3xl font-black text-gray-900 mb-4">Success!</h1>
+            <p class="text-gray-500 mb-8">Payment confirmed. Your books are on the way.</p>
+
+            <div class="space-y-3">
+                <button onclick="window.print()" class="w-full py-3 bg-gray-800 text-white font-bold rounded-xl hover:bg-black transition flex items-center justify-center gap-2">
+                    <i class="pi pi-print"></i> Print Official Invoice
+                </button>
+                <a href="/book/search" class="block w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="printable-invoice" class="hidden print-only p-10 bg-white text-gray-900">
+        <div class="flex justify-between items-start border-b-2 border-gray-100 pb-8 mb-8">
+            <div>
+                <h1 class="text-4xl font-black text-blue-600 tracking-tighter">BOOKHAUS.</h1>
+                <p class="text-gray-400 text-sm mt-1">123 Library Lane, Fiction City, TH</p>
+                <p class="text-gray-400 text-sm">support@bookhaus.com</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-2xl font-bold uppercase tracking-widest">Invoice</h2>
+                <p class="text-gray-500">Order ID: #<%= order.orderId %></p>                   
+                <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase 
+                    <%= order.status === 'Paid' ? 'bg-blue-100 text-blue-700' : 
+                        order.status === 'Shipped' ? 'bg-purple-100 text-purple-700' : 
+                        'bg-green-100 text-green-700' %>">
+                    <%= order.status %>
+                </span>
+                <p class="text-gray-500">Payment ID: <span class="text-black font-mono"><%= order.paymentId || 'N/A' %></span></p>
+                <p class="text-gray-500">Date: <%= new Date(order.orderDate).toLocaleDateString() %></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-12 mb-10">
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Billed To:</h3>
+                <p class="font-bold text-lg"><%= order.customer?.person?.firstname %> <%= order.customer?.person?.lastname %></p>
+                <p class="text-gray-600"><%= order.customer?.person?.email %></p>
+                <p class="text-gray-600"><%= order.customer?.person?.phone %></p>
+            </div>
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Shipping Address:</h3>
+                <p class="text-gray-700 leading-relaxed"><%= order.customer?.person?.address %></p>
+            </div>
+        </div>
+
+        <table class="w-full mb-10">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-widest border-y border-gray-100">
+                    <th class="px-4 py-4 text-left">Book Title</th>
+                    <th class="px-4 py-4 text-center">Qty</th>
+                    <th class="px-4 py-4 text-right">Unit Price</th>
+                    <th class="px-4 py-4 text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                <% order.orderDetails.forEach(item => { %>
+                    <tr>
+                        <td class="px-4 py-5 font-semibold text-gray-900"><%= item.book?.title %></td>
+                        <td class="px-4 py-5 text-center"><%= item.quantity %></td>
+                        <td class="px-4 py-5 text-right">$<%= Number(item.unitPrice).toFixed(2) %></td>
+                        <td class="px-4 py-5 text-right font-bold">$<%= (item.quantity * item.unitPrice).toFixed(2) %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <div class="flex justify-end pt-6 border-t-2 border-gray-900">
+            <div class="w-64 space-y-3">
+                <div class="flex justify-between text-gray-500">
+                    <span>Subtotal</span>
+                    <span>$<%= order.orderTotal.toFixed(2) %></span>
+                </div>
+                <div class="flex justify-between text-gray-500">
+                    <span>Shipping</span>
+                    <span class="text-green-600 font-bold">FREE</span>
+                </div>
+                <div class="flex justify-between text-2xl font-black border-t pt-3">
+                    <span>Amount Paid</span>
+                    <span class="text-blue-600">$<%= order.orderTotal.toFixed(2) %></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-20 text-center border-t border-gray-100 pt-8">
+            <p class="text-gray-400 text-xs italic">Thank you for shopping with Bookhaus. Please keep this invoice for your records.</p>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

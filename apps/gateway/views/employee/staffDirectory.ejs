@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Staff Directory | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 antialiased">
+    <%- include('../partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto py-12 px-6">
+        <% if (typeof status !== 'undefined' && status === 'updated') { %>
+            <div id="success-alert" class="mb-8 flex items-center justify-between p-4 bg-emerald-50 border border-emerald-100 rounded-2xl animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex items-center gap-3 text-emerald-700">
+                    <div class="bg-emerald-500 text-white rounded-full p-1">
+                        <i class="pi pi-check text-xs"></i>
+                    </div>
+                    <p class="font-bold text-sm">Staff member updated successfully!</p>
+                </div>
+                <button onclick="document.getElementById('success-alert').remove()" class="text-emerald-400 hover:text-emerald-600 transition">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
+        <% } %>
+        <h1 class="text-4xl font-black tracking-tighter mb-8">Staff Management 👥</h1>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-400 font-black">
+                    <tr>
+                        <th class="px-6 py-4 w-16">ID</th>
+                        <th class="px-6 py-4">Full Name</th>
+                        <th class="px-6 py-4">Position</th>
+                        <th class="px-6 py-4">Email</th>
+                        <th class="px-6 py-4">Hire Date</th>
+                        <th class="px-6 py-4 text-right">Salary</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <% if (employees.length === 0) { %>
+                        <tr>
+                            <td colspan="6" class="px-6 py-10 text-center text-gray-400">No staff members found</td>
+                        </tr>
+                    <% } %>
+
+                    <% employees.forEach(emp => { %>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="px-6 py-4 text-gray-400 font-mono"><%= emp.id %></td>
+                        <td class="px-6 py-4">
+                            <a href="/employee/editStaff/<%= emp.id %>" class="font-bold text-blue-600 hover:underline">
+                                <%= emp.person?.firstname %> <%= emp.person?.lastname %>
+                            </a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-black uppercase 
+                                <%= emp.position === 'Manager' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' %>">
+                                <%= emp.position %>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600"><%= emp.person?.email %></td>
+                        <td class="px-6 py-4 text-gray-500">
+                            <%= new Date(emp.hiredate).toLocaleDateString('en-GB') %>
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold text-slate-700">
+                            $<%= Number(emp.salary).toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+    const alert = document.getElementById('success-alert');
+    if (alert) {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => alert.remove(), 500);
+        }, 4000);
+    }
+</script>
+</body>
+</html>

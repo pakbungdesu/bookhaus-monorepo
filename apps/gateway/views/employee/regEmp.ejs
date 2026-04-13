@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Registration | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white rounded-3xl shadow-xl shadow-gray-200 p-8 md:p-12 max-w-3xl w-full border border-gray-100">
+            <div class="text-center mb-10">
+                <img src="/images/logo.png" alt="Logo" class="max-w-[60px] mx-auto mb-4">
+                <div class="flex items-center justify-center gap-3">
+                    <i class="pi pi-user-plus text-2xl text-gray-900"></i>
+                    <h3 class="text-2xl font-bold tracking-tight text-gray-900">Registration</h3>
+                </div>
+            </div>
+
+            <form action="/auth/register/customer" method="POST" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">First Name</label>
+                        <input type="text" name="firstname" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                        <input type="text" name="lastname" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+
+                    <% if (typeof isEmployee !== 'undefined') { %>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Job Position</label>
+                        <select name="position" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none bg-white" required>
+                            <option value="">Select Position</option>
+                            <option value="Staff">Sales Staff</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">System Admin</option>
+                        </select>
+                    </div>
+                    <% } %>
+
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Birthday</label>
+                        <input type="date" name="birthdate" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Gender</label>
+                        <div class="flex gap-6 pt-2">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="gender" value="Female" class="accent-black"> Female</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="gender" value="Male" class="accent-black"> Male</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="gender" value="Other" class="accent-black"> Other</label>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Email</label>
+                        <input type="email" name="email" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Password</label>
+                        <input type="password" name="password" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                        <input type="text" name="phone" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                    <div class="flex flex-col md:col-span-2">
+                        <label class="text-sm font-bold text-gray-700 mb-2">Address</label>
+                        <input type="text" name="address" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black outline-none transition" required>
+                    </div>
+                </div>
+
+                <div class="text-center pt-6">
+                    <button type="submit" class="w-full md:w-auto px-12 py-4 bg-black text-white rounded-full font-bold text-lg hover:bg-gray-800 transition shadow-xl shadow-gray-200">
+                        Create Account
+                    </button>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <a href="/auth/loginCus" class="text-sm font-semibold text-blue-900 hover:underline transition">
+                        Already have an account? Login here
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        <section class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold text-gray-900 mb-6">Services We Offer 🚚💨</h1>
+            <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+                At BookHaus Bookstore, we aim to provide more than just books; we offer services designed to enhance your reading life.
+            </p>
+        </section>
+
+        <hr class="border-gray-200 mb-16">
+
+        <h2 class="text-xl font-bold mb-8 text-gray-900">Our Core Services</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-16 w-full">
+            <% const services = [
+                { icon: 'pi-book', title: 'Curated Selection', desc: 'Hand-picked titles across Fiction, Non-Fiction, and Tech.' },
+                { icon: 'pi-truck', title: 'Fast Shipping', desc: 'Orders processed in 1-2 days. Safe delivery guaranteed.' },
+                { icon: 'pi-calendar-plus', title: 'Pre-Orders', desc: 'Be the first to read. Pre-order upcoming bestsellers.' },
+                { icon: 'pi-ticket', title: 'Digital Gift Cards', desc: 'The perfect gift for book lovers. Valid everywhere.' }
+            ] %>
+            
+            <% services.forEach(service => { %>
+                <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition text-center flex flex-col items-center">
+                    <i class="pi <%= service.icon %> text-4xl text-gray-900 mb-6"></i>
+                    <h3 class="font-bold text-lg mb-3"><%= service.title %></h3>
+                    <p class="text-gray-500 text-sm leading-relaxed"><%= service.desc %></p>
+                </div>
+            <% }) %>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-gray-200 p-10 flex flex-col md:flex-row items-center gap-10 shadow-lg shadow-gray-100">
+            <div class="text-5xl text-yellow-400">
+                <i class="pi pi-sparkles"></i>
+            </div>
+            <div class="flex-1">
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">Personalized Recommendations</h2>
+                <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                    Our intelligent system analyzes your past purchases and browsing history to suggest books tailored exactly to your unique tastes.
+                </p>
+            </div>
+        </div>
+    </main>
+    <%- include('partials/footer') %>
+</body>
+</html>

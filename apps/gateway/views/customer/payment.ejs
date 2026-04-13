@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment | Bookhaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-gray-50 antialiased flex flex-col min-h-screen">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-md mx-auto px-4 py-16 text-center">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+            <div class="mb-6">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="pi pi-wallet text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Scan to Pay</h1>
+                <p class="text-gray-500 mt-2">Order #<%= orderId %></p>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-200 mb-8">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=BOOKHAUS_ORDER_<%= orderId %>" 
+                    alt="QR Code" class="mx-auto shadow-sm rounded-lg">
+                <p class="text-xs text-gray-400 mt-4 uppercase tracking-widest font-bold">PromptPay / Credit Card</p>
+            </div>
+
+            <button onclick="simulatePayment('<%= orderId %>')" id="pay-btn"
+                    class="w-full py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-100 flex items-center justify-center gap-2">
+                <i class="pi pi-check-circle"></i> Confirm Payment
+            </button>
+            
+            <p class="mt-6 text-sm text-gray-400">
+                Waiting for payment signal...
+            </p>
+        </div>
+    </div>
+
+<script>
+    async function simulatePayment(orderId) {
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="pi pi-spin pi-spinner"></i> Processing...';
+
+        try {
+            const response = await fetch('/order/payment/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = data.redirectUrl;
+            } else {
+                alert('Payment failed. Please try again.');
+                btn.disabled = false;
+                btn.innerText = 'Confirm Payment (Mockup)';
+            }
+        } catch (err) {
+            console.error(err);
+            alert('System Error');
+        }
+    }
+    </script>
+</body>
+</html>

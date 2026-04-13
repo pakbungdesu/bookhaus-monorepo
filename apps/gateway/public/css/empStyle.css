@@ -1,0 +1,144 @@
+    
+    /* 1. Remove the Panel Header and Border */
+    .full-screen-panel.ui-panel {
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .full-screen-panel .ui-panel-titlebar {
+        display: none !important; /* This hides the header completely */
+    }
+
+    .full-screen-panel .ui-panel-content {
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* 2. Make content fit the screen */
+    .layout-wrapper {
+        width: 100%;
+        min-height: 100vh; /* Fill vertical height */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content {
+        width: 100%;
+        max-width: 1200px; /* Optional: keeps text from being too wide on huge monitors */
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    /* 3. Style cleanup */
+    .card-item i {
+        font-size: 3rem;
+        color: #3498db;
+        margin-bottom: 10px;
+    }
+
+    .card-item p {
+        color: #666;
+        padding: 0 15px;
+    }
+
+    .hero-img-bottom {
+        max-width: 45%;
+        height: auto;
+        border-radius: 15px;
+        margin: 50px 0;
+    }
+
+    .quote-text {
+        font-size: 19px;
+        font-family: inherit; /* Keeps your font style but removes 'courier' look */
+        white-space: pre-wrap; /* Better for mobile screens */
+    }
+
+    /* Hero text */
+    .hero-text{
+        font-size:2.8rem;
+        color:#111827;
+        margin-bottom:10px;
+    }
+
+    /* Highlight text */
+    .my-bold{
+        font-style:italic;
+        background:black;
+        color:white;
+        padding:0 20px;
+    }
+
+    /* Cleaner PrimeFaces menu */
+    .menu-clean .ui-menu{
+        border:none;
+        width:100%;
+    }
+    
+    .ui-g {
+        padding: 0 !important; /* Removes the vertical gap between rows */
+    }
+    .ui-g div {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    .dashboard-img { width: 100%; max-height: 400px; object-fit: cover; display: block; }
+
+    .ui-inputfield { width: 350px; }
+    .form-grid td { padding: 10px; }
+    
+    .layout-body {
+        margin: 0;
+        background-color: white;
+        font-family: var(--font-family, sans-serif); 
+    }
+    
+    body .ui-tag {
+        width: 70px !important;    /* Forces all tags to this width */
+        display: inline-flex;      /* Keeps it centered */
+        justify-content: center;   /* Centers the text inside the tag */
+        text-align: center;
+    }
+    
+   /* Normal State */
+    body .ui-button.ui-button-success {
+        background-color: #00865a !important;
+        border-color: #00865a !important;
+        color: #ffffff !important;
+    }
+
+    /* Hover State */
+    body .ui-button.ui-button-success:hover {
+        background-color: #006d49 !important;
+        border-color: #1e7e34 !important;
+    }
+
+    /* Focus/Active State */
+    body .ui-button.ui-button-success:focus {
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5) !important;
+    }
+    
+    body .ui-tag.ui-tag-success {
+        background: #00865a !important;
+        color: #ffffff !important;     
+        border: 1px solid #1e7e34;
+    }
+    
+    /* Make all status tags the same width */
+    .fixed-status-tag .ui-tag {
+        width: 90px;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    /* Make all action buttons the same width */
+    .fixed-size-button {
+        width: 120px !important;
+        justify-content: center;
+    }
+
+    /* Ensure table cells are centered vertically and horizontally */
+    .text-center {
+        text-align: center !important;
+    }

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= book.title %> | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-white font-sans antialiased text-gray-900">
+    <script>
+        async function addToFavorites(productId) {
+            const btn = document.getElementById(`fav-btn-${productId}`);
+            
+            try {
+                const response = await fetch(`/favorite/add/${productId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    btn.innerHTML = '<i class="pi pi-heart-fill mr-2 text-red-500"></i> Added to Wishlist';
+                    btn.classList.remove('bg-gray-900');
+                    btn.classList.add('bg-gray-800', 'border', 'border-gray-700');
+                    btn.disabled = true;
+                    alert(data.message || 'Success! Added to favorites.');
+                } else {
+                    alert('Could not add to favorites. Are you logged in?');
+                }
+            } catch (error) {
+                console.error('AJAX Error:', error);
+            }
+        }
+
+        async function addToCart(productId) {
+            const btn = document.getElementById(`cart-btn-${productId}`);
+            const originalContent = btn.innerHTML;
+
+            try {
+                const response = await fetch(`/order/add/${productId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Visual feedback
+                    btn.innerHTML = '<i class="pi pi-check mr-2"></i> Added!';
+                    btn.classList.replace('bg-green-600', 'bg-green-700');
+                    
+                    // Revert button after 2 seconds so they can add more
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.replace('bg-green-700', 'bg-green-600');
+                    }, 2000);
+
+                    alert(data.message || 'Item added to cart!');
+                } else {
+                    alert('Failed to add to cart. Please check your login.');
+                }
+            } catch (error) {
+                console.error('Cart AJAX Error:', error);
+            }
+        }
+        </script>
+
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row gap-16 min-h-[60vh]">
+        <% if (book) { %>
+            <div class="md:w-1/3 flex justify-center items-start">
+                <img src="/book/image/<%= book.productId %>" alt="<%= book.title %>"
+                     class="w-72 rounded-xl shadow-2xl shadow-gray-400 hover:scale-105 transition duration-500">
+            </div>
+
+            <div class="md:w-2/3">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tighter leading-none mb-6"><%= book.title %></h1>
+                <p class="text-2xl text-gray-500 flex items-center gap-3">
+                    <i class="pi pi-user"></i> By <span class="font-bold text-gray-900"><%= book.author %></span>
+                </p>
+                
+                <div class="mt-8 flex flex-wrap gap-4 items-center">
+                    <span class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-2">
+                        <i class="pi pi-check-circle"></i> In Stock: <%= book.stock %>
+                    </span>
+                    <span class="text-gray-400 text-sm flex items-center gap-2">
+                        <i class="pi pi-calendar"></i> Published: <%= book.year %>
+                    </span>
+                </div>
+
+                <hr class="my-10 border-gray-100">
+                
+                <div class="space-y-4">
+                    <h3 class="text-xs font-black text-gray-300 uppercase tracking-[0.2em]">Description</h3>
+                    <p class="text-lg text-gray-600 leading-relaxed"><%= book.description %></p>
+                </div>
+                
+                <div class="mt-12 text-5xl font-black text-gray-900 tracking-tighter">$<%= book.price %></div>
+
+                <div class="mt-2 text-sm font-bold text-gray-300 uppercase italic">
+                    Genre: <span class="text-gray-400"><%= book.genre %> / <%= book.subgenre %></span>
+                </div>
+                
+                <% if (user && user.DTYPE === 'Customer') { %>
+                    <div class="mt-10 flex flex-wrap gap-4">
+                        <form action="/favorite/add/<%= book.productId %>" method="POST">
+                            <button type="button" 
+                                    id="fav-btn-<%= book.productId %>"
+                                    onclick="addToFavorites('<%= book.productId %>')"
+                                    class="px-8 py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black hover:-translate-y-1 transition duration-200 shadow-lg shadow-gray-200 cursor-pointer">
+                                <i class="pi pi-heart mr-2"></i> Add to Favorites
+                            </button>
+                        </form>
+
+                        <form action="/order/add/<%= book.productId %>" method="POST">
+                            <button type="button" 
+                                    id="cart-btn-<%= book.productId %>"
+                                    onclick="addToCart('<%= book.productId %>')"
+                                    class="px-8 py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 hover:-translate-y-1 transition duration-200 shadow-lg shadow-green-100 cursor-pointer">
+                                <i class="pi pi-shopping-cart mr-2"></i> Add to cart
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="w-full text-center py-32">
+                <i class="pi pi-exclamation-circle text-7xl text-red-500 mb-6"></i>
+                <h1 class="text-3xl font-bold">Book Not Found</h1>
+                <a href="/book/search" class="text-blue-500 hover:underline mt-4 inline-block">Return to Gallery</a>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home | BookHaus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+</head>
+<body class="bg-white font-sans antialiased">
+    <%- include('./partials/navbar') %>
+
+    <div class="w-full overflow-hidden">
+        <img src="/images/bookhaus.png" alt="Hero Banner" 
+            class="w-full h-64 md:h-[400px] object-cover object-center">
+    </div>
+
+    <main class="max-w-5xl mx-auto px-5 py-16">
+        
+        <header class="mb-16 text-center">
+            <% if (typeof user !== 'undefined' && user && user.DTYPE === 'Employee') { %>
+                <%- include('./partials/titleEmp') %>
+            <% } else { %>
+                <%- include('./partials/titleCus') %>
+            <% } %>
+        </header>
+
+        <section class="max-w-4xl mx-auto pb-24 text-center">
+            <img src="/images/whywe1.webp" alt="bookshelf" class="max-w-[50%] mx-auto">
+
+            <div class="text-4xl font-bold my-16">Why We Read?</div>
+
+            <div class="flex flex-col md:flex-row items-center gap-10 mb-16 text-left">
+                <div class="flex-1 flex justify-center">
+                    <img src="/images/whywe2.jpg" alt="escape" class="max-w-[80%]">
+                </div>
+                <div class="flex-1 px-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <i class="pi pi-compass text-4xl text-gray-900"></i>
+                        <h3 class="text-3xl font-bold text-gray-900">The Escape</h3>
+                    </div>
+                    <p class="text-gray-500 text-lg leading-relaxed">Travel to distant lands and different eras without ever leaving your favorite chair.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row-reverse items-center gap-10 mb-16 text-left">
+                <div class="flex-1 flex justify-center">
+                    <img src="/images/whywe3.jpg" alt="connection" class="max-w-[80%]">
+                </div>
+                <div class="flex-1 px-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <i class="pi pi-heart text-4xl text-gray-900"></i>
+                        <h3 class="text-3xl font-bold text-gray-900">The Connection</h3>
+                    </div>
+                    <p class="text-gray-500 text-lg leading-relaxed">Discover voices that echo your own heart and stories that broaden your world.</p>
+                </div>
+            </div>
+
+            <% if (typeof user !== 'undefined' && user && user.DTYPE === 'Employee') { %>
+                <div class="my-20 pt-10 border-t border-gray-100">
+                    <%- include('./partials/contentEmp') %>
+                </div>
+            <% } %>
+
+            <div class="mt-12">
+                <a href="/book/search" class="inline-block bg-gray-900 text-white px-10 py-4 rounded-full text-xl font-semibold hover:bg-black hover:-translate-y-1 transition duration-300 shadow-xl shadow-gray-200">
+                    <i class="pi pi-book mr-2"></i> Browse Our Collection
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <%- include('./partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<div class="max-w-4xl mx-auto space-y-8">
+    <% const features = [
+        { icon: 'pi-users', title: 'Smart Team', desc: 'Curators of imagination who bridge the gap between data and the human heart.' },
+        { icon: 'pi-cog', title: 'Smart Tool', desc: 'Frictionless systems that simplify the complex so you can focus on the story.' },
+        { icon: 'pi-bolt', title: 'Smart Vibe', desc: 'A modern, soulful atmosphere where efficiency meets pure inspiration.' }
+    ] %>
+
+    <% features.forEach(f => { %>
+        <div class="flex items-center gap-8 bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center gap-4 w-1/3 justify-end border-r pr-8 border-gray-100">
+                <i class="pi <%= f.icon %> text-3xl text-blue-500"></i>
+                <span class="text-2xl font-bold text-gray-800"><%= f.title %></span>
+            </div>
+            <p class="text-lg text-gray-600 w-2/3"><%= f.desc %></p>
+        </div>
+    <% }) %>
+</div>
