@@ -17,7 +17,7 @@
 
 ## 📖 Description
 
-**Bookhaus** is a full-stack e-commerce solution. This repository serves as a monorepo housing the core API services, enterprise logic, and upcoming AI recommendation engines. It bridges the gap between traditional Java enterprise development and modern TypeScript microservices.
+**Bookhaus** is full-stack e-commerce solution developed as a web programming student project. This repository utilizes a monorepo architecture to manage multiple microservices, bridging enterprise logic with modern TypeScript development.
 
 ## 🛠️ Project Structure
 
