@@ -64,7 +64,7 @@ export class CustomerController {
     };
   }
 
-  @Get('editProfile')
+  @Get('edit')
   @Roles('Customer')
   @Render('customer/updateProfile')
   async getUpdateProfile(@Req() req){
@@ -81,7 +81,7 @@ export class CustomerController {
     };
   }
 
-  @Post('updateProfile')
+  @Post('update')
   @Roles('Customer')
   async updateProfile(@Body() updateData: any, @Req() req, @Res() res) {
     const userId = Number(req.user.sub);
