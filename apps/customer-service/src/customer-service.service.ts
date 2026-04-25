@@ -13,14 +13,14 @@ export class CustomerService {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  // 1. Find All (Clean version)
+  // 1. Find All
   async findAllCustomers(): Promise<Customer[]> {
     return await this.customerRepository.find({
       relations: ['person'], // Removed 'orders'
     });
   }
 
-  // 2. Find One (Clean version)
+  // 2. Find One
   async findOne(id: number): Promise<Customer | null> {
     return await this.customerRepository.findOne({
       where: { id },

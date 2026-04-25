@@ -20,25 +20,22 @@ export class AuthController {
     @Inject('AUTH_SERVICE') private client: ClientProxy,
   ) {}
 
-  // --- Render Login/Register Pages ---
-
-  @Get('loginCus')
+  @Get('login/cust')
   @Render('customer/loginCus')
   showCusLogin() { return { title: 'Customer Login' }; }
 
-  @Get('loginEmp')
+  @Get('login/emp')
   @Render('employee/loginEmp')
   showEmpLogin() { return { title: 'Employee Login' }; }
 
-  @Get('regCus')
+  @Get('register/cust')
   @Render('customer/regCus')
   showCusReg() { return { title: 'Register Customer' }; }
 
-  @Get('regEmp')
+  @Get('register/emp')
   @Render('employee/regEmp')
   showEmpReg() { return { title: 'Register Employee' }; }
 
-  // --- Auth Logic ---
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -50,7 +47,7 @@ export class AuthController {
       );
 
       if (!result || !result.access_token) {
-        return res.redirect('/auth/loginCus?error=Invalid Credentials');
+        return res.redirect('/auth/login/cust?error=Invalid Credentials');
       }
 
       // 2. Set the JWT inside an HTTP-only Cookie
@@ -72,7 +69,7 @@ export class AuthController {
 
     } catch (error) {
       console.error('Login Error:', error);
-      return res.redirect('/auth/loginCus?error=Internal Server Error');
+      return res.redirect('/auth/login/cust?error=Internal Server Error');
     }
   }
 
@@ -82,25 +79,25 @@ export class AuthController {
     return res.redirect('/');
   }
 
-  @Post('register/customer')
+  @Post('register/cust')
   async registerCustomer(@Body() dto: any, @Res() res: Response) {
     try {
       await lastValueFrom(
         this.client.send({ cmd: 'register_customer' }, dto)
       );
-      return res.redirect('/auth/loginCus?success=Registration successful');
+      return res.redirect('/auth/login/cust?success=Registration successful');
     } catch (err) {
       return res.render('customer/regCus', { error: 'Registration failed. Try again.' });
     }
   }
 
-  @Post('register/employee')
+  @Post('register/emp')
   async registerEmployee(@Body() dto: any, @Res() res: Response) {
     try {
       await lastValueFrom(
         this.client.send({ cmd: 'register_employee' }, dto)
       );
-      return res.redirect('/auth/loginEmp?success=Staff registered');
+      return res.redirect('/auth/login/emp?success=Staff registered');
     } catch (err) {
       return res.render('employee/regEmp', { error: 'Registration failed.' });
     }
