@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs'; // Changed to bcryptjs
+import * as bcrypt from 'bcryptjs';
 import { CreateCustomerDto, Customer, Person, UpdateCustomerDto } from '@app/shared'; // Using shared entities
 
 
