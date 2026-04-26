@@ -100,7 +100,7 @@ export class CustomerController {
   }
 
   @Get(':id')
-  @Roles('Employee', 'Manager')
+  @Roles('Employee', 'Manager', 'Customer')
   async findOne(@Param('id') id: string) {
     return await firstValueFrom(
       this.customerClient.send({ cmd: 'find_one_customer' }, +id).pipe(

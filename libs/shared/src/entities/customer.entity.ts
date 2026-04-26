@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, OneToOne, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Person } from './person.entity';
+import { Order } from './order.entity';
 
 @Entity('customer')
 export class Customer {
@@ -9,7 +10,4 @@ export class Customer {
   @OneToOne(() => Person, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id' })
   person: Person;
-  
-  // Note: We removed the 'orders' relationship here because 
-  // orders live in a different service/database.
 }

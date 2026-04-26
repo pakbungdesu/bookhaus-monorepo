@@ -191,14 +191,22 @@ export class OrderController {
   @Roles('Manager')
   @Render('employee/salesCompleted')
   async getCompletedOrders(@Req() req) {
+
     const historyOrders = await firstValueFrom(
       this.client.send({ cmd: 'find_completed_orders' }, { userRole: req.user.DTYPE })
     ).catch(() => []);
 
+    const ordersWithCustomers = await Promise.all(historyOrders.map(async (ord) => {
+        const customer = await firstValueFrom(
+            this.customerClient.send({ cmd: 'find_one_customer' }, ord.customerId)
+        ).catch(() => null);
+        return { ...ord, customer };
+    }));
+
     const totalRevenue = historyOrders.reduce((sum, ord) => sum + (ord.orderTotal || 0), 0);
     
     return { 
-      historyOrders, 
+      historyOrders: ordersWithCustomers, 
       totalRevenue, 
       user: req.user 
     };

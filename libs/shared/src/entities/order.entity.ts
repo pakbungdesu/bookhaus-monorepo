@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { OrderDetail } from './order-detail.entity';
+import { Customer } from './customer.entity';
 
 @Entity({ name: 'order' })
 export class Order {
@@ -23,4 +24,8 @@ export class Order {
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
   orderDetails: OrderDetail[];
+
+  @ManyToOne(() => Customer)
+  @JoinColumn({ name: 'customer_id' })
+  customer: Customer;
 }

@@ -12,12 +12,9 @@
 
     <main class="max-w-6xl mx-auto py-12 px-6 no-print">
         <div class="flex justify-between items-end mb-8">
-            <div>
-                <a href="/customer/records" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-2 mb-2">
-                    <i class="pi pi-arrow-left text-xs"></i> Back to Customer Management
-                </a>
-                <h1 class="text-4xl font-black tracking-tighter">Customer Order History ⏳</h1>
-            </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                    Sales History <span class="text-xl grayscale opacity-70">⏳</span>
+                </h1>
 
             <div class="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-6">
                 <div>
@@ -61,7 +58,7 @@
                             $<%= Number(ord.orderTotal).toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
                         </td>
                         <td class="px-8 py-5 text-center">
-                            <button onclick="prepareAndPrintInvoice('<%= JSON.stringify(order) %>')" 
+                            <button onclick='prepareAndPrintInvoice2(<%- JSON.stringify(ord) %>, <%- JSON.stringify(ord.customer) %>)'
                                     class="text-gray-400 hover:text-blue-600 transition">
                                 <i class="pi pi-print text-lg"></i>
                             </button>
@@ -72,6 +69,6 @@
             </table>
         </div>
     </main>
-    <%- include('../partials/invoice') %>
+    <%- include('../partials/invoice2') %>
 </body>
 </html>

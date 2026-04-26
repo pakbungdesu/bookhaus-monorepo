@@ -196,7 +196,7 @@ export class OrderService {
 
   async findCompleted() {
     return this.orderRepo.find({
-      where: { status: 'Completed' },
+      where: { status: 'Completed'},
       relations: ['orderDetails', 'orderDetails.book'],
       order: { orderDate: 'DESC' }
     });
