@@ -51,10 +51,10 @@ export class OrderController {
     return res.redirect(`/order/payment/${orderId}`);
   }
 
-  @Get('success')
+  @Get('success/:id')
   @Roles('Customer')
   @Render('customer/orderSuccess')
-  async showSuccess(@Query('id') orderId: string, @Req() req) {
+  async showSuccess(@Param('id') orderId: string, @Req() req) {
       const order = await firstValueFrom(
       this.client.send({ cmd: 'find_one_order' }, +orderId)
     );
@@ -105,7 +105,7 @@ export class OrderController {
       this.client.send({ cmd: 'process_checkout' }, payload)
     );
     
-    return { success: true, redirectUrl: `/order/success?orderId=${completedOrder.orderId}` };
+    return { success: true, redirectUrl: `/order/success/${completedOrder.orderId}` };
   }
 
   @Post('add/:id')
