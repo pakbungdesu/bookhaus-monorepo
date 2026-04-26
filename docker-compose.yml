@@ -34,7 +34,7 @@ services:
       dockerfile: ./apps/gateway/Dockerfile
     container_name: bookhaus-gateway
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=production
