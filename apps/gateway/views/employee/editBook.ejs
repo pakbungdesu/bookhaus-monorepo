@@ -73,13 +73,12 @@
 
     <%- include('../partials/navbar') %>
 
-    <main class="max-w-6xl mx-auto px-4 py-12 min-h-[70vh]">
+    <main class="max-w-6xl mx-auto px-4 py-12 min-h-[70vh]">                
+        <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+            Find a Book 📚
+        </h1>
         <form onsubmit="handleForm(event)">
             <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-                    Find a Book 📚
-                </h1>
-                
                 <div class="mt-6 flex flex-wrap gap-4">
                     <input type="text" id="search-title" placeholder="Search by title..." 
                         oninput="performSearch()"

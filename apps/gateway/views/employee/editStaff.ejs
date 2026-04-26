@@ -10,11 +10,11 @@
     <%- include('../partials/navbar') %>
 
     <div class="max-w-2xl mx-auto py-16 px-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+            Edit Staff Member: <%= employee.person?.firstname %> 📋
+        </h1>
+        
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            
-            <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-                 Edit Staff Member: <%= employee.person?.firstname %> 📋
-            </h1>
 
             <form action="/employee/update/<%= employee.id %>" method="POST" class="p-10 space-y-8">
                 
