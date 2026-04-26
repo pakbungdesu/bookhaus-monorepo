@@ -56,6 +56,6 @@ async function bootstrap() {
   app.setViewEngine('ejs');
 
   await app.listen(3000);
-  console.log('🚀 Gateway is live at http://localhost:3000');
+  console.log('🚀 Gateway is live at http://localhost:3001');
 }
 bootstrap();

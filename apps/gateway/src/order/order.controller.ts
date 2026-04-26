@@ -16,19 +16,6 @@ export class OrderController {
     @Inject('CUSTOMER_SERVICE') private readonly customerClient: ClientProxy
   ) {}
 
-  // --- EMPLOYEE VIEWS ---
-
-  @Get('active')
-  @Roles('Employee', 'Manager')
-  @Render('employee/activeOrder')
-  async getActiveOrders(@Req() req) {
-    // Request active orders from Microservice
-    const orders = await firstValueFrom(
-      this.client.send({ cmd: 'find_active_orders' }, { userRole: req.user.DTYPE })
-    ).catch(() => []); // Fallback to empty list if service is down
-
-    return { orders, user: req.user };
-  }
 
   @Post('update-status/:id')
   @Roles('Employee', 'Manager', 'Customer') // Allow Customer to 'Complete' their own order
@@ -45,31 +32,6 @@ export class OrderController {
     );
   }
 
-  @Get('history')
-  @Roles('Employee', 'Manager')
-  @Render('employee/customerHistory')
-  async getCustomerHistory(@Query('customerId') customerId: string, @Req() req) {
-    if (!customerId) throw new BadRequestException('Customer ID is required');
-
-    const [customer, orderHistory] = await Promise.all([
-        firstValueFrom(this.customerClient.send({ cmd: 'find_one_customer' }, customerId)),
-        firstValueFrom(this.client.send({ cmd: 'find_by_customer' }, customerId)).catch(() => [])
-      ]);
-
-    console.log(customer);
-    console.log(orderHistory);
-
-    const totalRevenue = orderHistory.reduce((acc, ord) => acc + Number(ord.orderTotal), 0);
-
-    return { orderHistory, totalRevenue, customer, user: req.user };
-  }
-
-  @Get('orderId/:id')
-  @Roles('Employee', 'Manager')
-  async getCustomerData(@Param('id') orderId: string) {
-    const customer = firstValueFrom(this.client.send({ cmd: 'find_by_customer' }, orderId)).catch(() => []);
-    return {customer: customer}
-  }
 
   // --- CUSTOMER VIEWS ---
 
@@ -88,7 +50,7 @@ export class OrderController {
     return res.redirect(`/order/payment/${orderId}`);
   }
 
-  @Get('orderSuccess')
+  @Get('success')
   @Roles('Customer')
   @Render('customer/orderSuccess')
   async showSuccess(@Query('orderId') orderId: string, @Req() req) {
@@ -143,7 +105,7 @@ export class OrderController {
       this.client.send({ cmd: 'process_checkout' }, payload)
     );
     
-    return { success: true, redirectUrl: `/order/orderSuccess?orderId=${completedOrder.orderId}` };
+    return { success: true, redirectUrl: `/order/success?orderId=${completedOrder.orderId}` };
   }
 
   @Post('add/:productId')
@@ -210,7 +172,7 @@ export class OrderController {
     return { success: true };
   }
 
-  // --- MANAGER / ADMIN ---
+  // --- EMPLOYEE ---
 
   @Get('completed')
   @Roles('Manager')
@@ -227,6 +189,44 @@ export class OrderController {
       totalRevenue, 
       user: req.user 
     };
+  }
+
+  @Get('history')
+  @Roles('Employee', 'Manager')
+  @Render('employee/customerHistory')
+  async getCustomerHistory(@Query('customerId') customerId: string, @Req() req) {
+    if (!customerId) throw new BadRequestException('Customer ID is required');
+
+    const [customer, orderHistory] = await Promise.all([
+        firstValueFrom(this.customerClient.send({ cmd: 'find_one_customer' }, customerId)),
+        firstValueFrom(this.client.send({ cmd: 'find_by_customer' }, customerId)).catch(() => [])
+      ]);
+
+    console.log(customer);
+    console.log(orderHistory);
+
+    const totalRevenue = orderHistory.reduce((acc, ord) => acc + Number(ord.orderTotal), 0);
+
+    return { orderHistory, totalRevenue, customer, user: req.user };
+  }
+
+  @Get('customer/:id')
+  @Roles('Employee', 'Manager')
+  async getCustomerData(@Param('id') customerId: string) {
+    const customer = firstValueFrom(this.client.send({ cmd: 'find_by_customer' }, customerId)).catch(() => []);
+    return {customer: customer}
+  }
+
+  @Get('active')
+  @Roles('Employee', 'Manager')
+  @Render('employee/activeOrder')
+  async getActiveOrders(@Req() req) {
+    // Request active orders from Microservice
+    const orders = await firstValueFrom(
+      this.client.send({ cmd: 'find_active_orders' }, { userRole: req.user.DTYPE })
+    ).catch(() => []); // Fallback to empty list if service is down
+
+    return { orders, user: req.user };
   }
 
   @Get(':id')
