@@ -61,7 +61,7 @@
                             $<%= Number(ord.orderTotal).toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
                         </td>
                         <td class="px-8 py-5 text-center">
-                            <button onclick='prepareAndPrintInvoice(`<%- JSON.stringify(ord).replace(/'/g, "\\'") %>`)' 
+                            <button onclick="prepareAndPrintInvoice('<%= JSON.stringify(order) %>')" 
                                     class="text-gray-400 hover:text-blue-600 transition">
                                 <i class="pi pi-print text-lg"></i>
                             </button>
