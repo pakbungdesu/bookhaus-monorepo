@@ -1,0 +1,79 @@
+<div id="global-invoice-print" class="print-only p-10 bg-white text-gray-900">
+    <div class="flex justify-between items-start border-b-2 border-gray-100 pb-8 mb-8">
+        <div>
+            <h1 class="text-4xl font-black text-blue-600 tracking-tighter">BOOKHAUS.</h1>
+            <p id="inv-cust-email" class="text-gray-400 text-sm mt-1"></p>
+            <p class="text-gray-400 text-sm">support@bookhaus.com</p>
+        </div>
+        <div class="text-right">
+            <h2 class="text-2xl font-bold uppercase tracking-widest">Official Receipt</h2>
+            <p class="text-gray-500">Order ID: <span id="inv-order-id" class="text-black font-mono"></span></p>
+            <p class="text-gray-500">Status: <span id="inv-status" class="font-bold"></span></p>
+            <p class="text-gray-500">Date: <span id="inv-date"></span></p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-12 mb-10 text-sm">
+        <div>
+            <h3 class="font-bold text-gray-400 uppercase mb-2">Billed To:</h3>
+            <p id="inv-cust-name" class="font-bold text-lg"></p>
+            <p id="inv-cust-phone" class="text-gray-600"></p>
+        </div>
+        <div>
+            <h3 class="font-bold text-gray-400 uppercase mb-2">Shipping Address:</h3>
+            <p id="inv-cust-address" class="text-gray-700"></p>
+        </div>
+    </div>
+
+    <table class="w-full mb-10 text-sm">
+        <thead class="bg-gray-50 border-y border-gray-100">
+            <tr class="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <th class="px-4 py-3 text-left">Item Name</th>
+                <th class="px-4 py-3 text-center">Qty</th>
+                <th class="px-4 py-3 text-right">Price</th>
+                <th class="px-4 py-3 text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody id="inv-items-body" class="divide-y divide-gray-50"></tbody>
+    </table>
+
+    <div class="flex justify-end pt-6 border-t-2 border-gray-100">
+        <div class="w-48 text-right space-y-2">
+            <p class="text-gray-500 text-xs uppercase font-bold tracking-widest">Amount Paid</p>
+            <p id="inv-grand-total" class="text-3xl font-black text-blue-600"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function prepareAndPrintInvoice(orderInput) {
+        const order = typeof orderInput === 'string' ? JSON.parse(orderInput) : orderInput;
+        const customer = <%- JSON.stringify(customer) %>;
+
+        // Header & Customer Info
+        document.getElementById('inv-order-id').innerText = `#${order.orderId}`;
+        document.getElementById('inv-status').innerText = order.status;
+        document.getElementById('inv-date').innerText = new Date(order.orderDate).toLocaleDateString();
+        document.getElementById('inv-cust-name').innerText = `${customer.person.firstname} ${customer.person.lastname}`;
+        document.getElementById('inv-cust-email').innerText = customer.person.email;
+        document.getElementById('inv-cust-phone').innerText = customer.person.phone;
+        document.getElementById('inv-cust-address').innerText = customer.person.address;
+
+        // Fill Items
+        const tbody = document.getElementById('inv-items-body');
+        tbody.innerHTML = '';
+        order.orderDetails.forEach(item => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="px-4 py-4 font-semibold">${item.book?.title || 'Unknown Book'}</td>
+                    <td class="px-4 py-4 text-center">${item.quantity}</td>
+                    <td class="px-4 py-4 text-right">$${Number(item.unitPrice || 0).toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right font-bold">$${(item.quantity * (item.unitPrice || 0)).toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('inv-grand-total').innerText = `$${(Number(order.orderTotal) || 0).toFixed(2)}`;
+        window.print();
+    }
+</script>

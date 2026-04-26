@@ -1,0 +1,20 @@
+@media screen {
+    .print-only { display: none; }
+}
+
+@media print {
+    .no-print, nav, footer { display: none !important; }
+    .print-only { display: block !important; }
+
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+    #global-invoice-print {
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
