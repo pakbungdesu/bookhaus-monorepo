@@ -14,9 +14,20 @@
         @media print {
             .no-print, nav, footer { display: none !important; }
             .print-only { display: block !important; }
-            body { background: white; }
+
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+            #global-invoice-print {
+                margin: 0 !important;
+                box-shadow: none !important; /* Removes potential box-shadow that might look like a gray border */
+            }
+
             * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
+        
     </style>
 </head>
 <body class="bg-gray-50 antialiased flex flex-col min-h-screen">
@@ -79,7 +90,7 @@
             <tbody id="inv-items-body" class="divide-y divide-gray-50"></tbody>
         </table>
 
-        <div class="flex justify-end pt-6 border-t-2 border-gray-900">
+        <div class="flex justify-end pt-6 border-t-2 border-gray-100">
             <div class="w-48 text-right space-y-2">
                 <p class="text-gray-500 text-xs uppercase font-bold tracking-widest">Amount Paid</p>
                 <p id="inv-grand-total" class="text-3xl font-black text-blue-600"></p>
