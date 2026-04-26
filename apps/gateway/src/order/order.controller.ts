@@ -64,8 +64,7 @@ export class OrderController {
       this.customerClient.send({ cmd: 'find_one_customer' }, order.customerId)
     ).catch(() => null);
 
-    order.customer = customer;
-    return { order, user: req.user };
+    return { order, customer, user: req.user };
   }
 
   @Get('cart')
@@ -85,17 +84,17 @@ export class OrderController {
   }
 
   // Show the QR Code Page
-  @Get('payment/:orderId')
+  @Get('payment/:id')
   @Roles('Customer')
   @Render('customer/payment')
-  async showPayment(@Param('orderId') orderId: string, @Req() req) {
+  async showPayment(@Param('id') orderId: string, @Req() req) {
     return { orderId, user: req.user };
   }
 
 
   @Post('payment/confirm')
   @Roles('Customer')
-  async confirmPayment(@Body('orderId') orderId: string, @Req() req) {
+  async confirmPayment(@Body('id') orderId: string, @Req() req) {
     const payload = { 
       userId: Number(req.user.sub), 
       orderId: Number(orderId) 
@@ -108,9 +107,9 @@ export class OrderController {
     return { success: true, redirectUrl: `/order/success?orderId=${completedOrder.orderId}` };
   }
 
-  @Post('add/:productId')
+  @Post('add/:pid')
   @Roles('Customer')
-  async addToCart(@Param('productId') productId: string, @Req() req) {
+  async addToCart(@Param('id') productId: string, @Req() req) {
     const payload = { 
       userId: Number(req.user.sub), 
       productId: +productId, 
@@ -123,7 +122,7 @@ export class OrderController {
   @Post('cart/remove')
   @Roles('Customer')
   // REMOVE "@Res() res: Response" from the parameters here
-  async removeFromCart(@Body('productId') productId: string, @Req() req) { 
+  async removeFromCart(@Body('id') productId: string, @Req() req) { 
     const payload = { 
       userId: Number(req.user.sub), 
       productId: +productId, 
@@ -142,6 +141,9 @@ export class OrderController {
   @Roles('Customer')
   // REMOVE "@Res() res: Response" from the parameters here
   async updateCartQuantity(@Body() data: { productId: string; quantity: string }, @Req() req) {
+
+    if (!data.productId || !data.quantity) throw new BadRequestException('Invalid data');
+
     const payload = { 
       userId: Number(req.user.sub), 
       productId: Number(data.productId), 
@@ -194,7 +196,7 @@ export class OrderController {
   @Get('history')
   @Roles('Employee', 'Manager')
   @Render('employee/customerHistory')
-  async getCustomerHistory(@Query('customerId') customerId: string, @Req() req) {
+  async getCustomerHistory(@Query('id') customerId: string, @Req() req) {
     if (!customerId) throw new BadRequestException('Customer ID is required');
 
     const [customer, orderHistory] = await Promise.all([
@@ -230,6 +232,7 @@ export class OrderController {
   }
 
   @Get(':id')
+  @Roles('Employee', 'Manager', 'Customer')
   async getOrder(@Param('id') id: string) {
       return await firstValueFrom(
           this.client.send({ cmd: 'find_one_order' }, +id)
