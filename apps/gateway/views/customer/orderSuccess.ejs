@@ -88,8 +88,8 @@
     </div>
 
     <script>
-     function prepareAndPrintInvoice(orderJson) {
-            const order = typeof orderObj === 'string' ? JSON.parse(orderObj) : orderObj;
+     function prepareAndPrintInvoice(orderInput) {
+            const order = typeof orderInput === 'string' ? JSON.parse(orderInput) : orderInput;
             const customer = <%- JSON.stringify(customer) %>;
 
             // Header & Customer Info

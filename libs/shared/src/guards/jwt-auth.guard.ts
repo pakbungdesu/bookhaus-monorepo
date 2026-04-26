@@ -12,8 +12,6 @@ export class JwtAuthGuard implements CanActivate {
       request.headers.authorization?.split(' ')[1] || 
       request.cookies?.['access_token']; 
 
-      console.log('Extracted Token:', token); // Debugging line
-
     if (!token) {
       request['user'] = null; // Guest mode
       return true; 

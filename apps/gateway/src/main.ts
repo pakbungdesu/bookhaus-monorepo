@@ -14,7 +14,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(GatewayModule);
 
   // Register the filter globally
-  app.useGlobalFilters(new ViewExceptionFilter());
+  //app.useGlobalFilters(new ViewExceptionFilter());
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,        // Strips away properties not in the DTO

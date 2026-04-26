@@ -28,6 +28,11 @@ export class OrderController {
 
   @MessagePattern({ cmd: 'add_to_cart' })
   async addToCart(@Payload() data: { userId: number; productId: number }) {
+    console.log('Received payload:', data); 
+  
+    if (!data || !data.userId || !data.productId) {
+        throw new Error('Invalid payload received by Order Service');
+    }
     return this.orderService.addToCart(data.userId, data.productId);
   }
 

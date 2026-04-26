@@ -1,7 +1,8 @@
 import { 
   Controller, Get, Post, Body, Param, Delete, Query, 
   UseGuards, Render, Res, Req, HttpCode, HttpStatus, Inject, NotFoundException, 
-  BadRequestException
+  BadRequestException,
+  InternalServerErrorException
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -53,7 +54,7 @@ export class OrderController {
   @Get('success')
   @Roles('Customer')
   @Render('customer/orderSuccess')
-  async showSuccess(@Query('orderId') orderId: string, @Req() req) {
+  async showSuccess(@Query('id') orderId: string, @Req() req) {
       const order = await firstValueFrom(
       this.client.send({ cmd: 'find_one_order' }, +orderId)
     );
@@ -107,16 +108,26 @@ export class OrderController {
     return { success: true, redirectUrl: `/order/success?orderId=${completedOrder.orderId}` };
   }
 
-  @Post('add/:pid')
+  @Post('add/:id')
   @Roles('Customer')
   async addToCart(@Param('id') productId: string, @Req() req) {
-    const payload = { 
-      userId: Number(req.user.sub), 
-      productId: +productId, 
-      userRole: req.user.DTYPE 
-    };
-    // Standard "Fire and Forget" or wait for confirmation
-    return await firstValueFrom(this.client.send({ cmd: 'add_to_cart' }, payload));
+    try {
+      const userId = Number(req.user?.sub);
+      const pid = Number(productId);
+
+      if (!userId || !pid) {
+        throw new BadRequestException('Invalid User or Product ID');
+      }
+
+      const payload = { userId: userId, productId: pid };
+      
+      // Set a timeout so the gateway doesn't hang indefinitely
+      return await firstValueFrom(this.client.send({ cmd: 'add_to_cart' }, payload));
+    } catch (err) {
+      console.error('Order Service Error:', err);
+      // Return a 500 status with a JSON message instead of crashing
+      throw new InternalServerErrorException( err instanceof Error ? err.message : 'Order service unreachable');
+    }
   }
 
   @Post('cart/remove')
