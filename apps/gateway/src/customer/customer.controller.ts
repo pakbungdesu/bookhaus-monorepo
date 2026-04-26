@@ -1,10 +1,11 @@
 import { 
   Controller, Get, Post, Body, Param, Delete, 
   UseGuards, Render, Req, Res, Inject, UnauthorizedException,
-  HttpCode, HttpStatus, NotFoundException
+  HttpCode, HttpStatus, NotFoundException,
+  HttpException
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { JwtAuthGuard, Roles, RolesGuard } from '@app/shared';
 
 @Controller('customer')
@@ -101,13 +102,15 @@ export class CustomerController {
   @Get(':id')
   @Roles('Employee', 'Manager')
   async findOne(@Param('id') id: string) {
-    const data = await firstValueFrom(
-      this.customerClient.send({ cmd: 'find_one_customer' }, +id)
+    return await firstValueFrom(
+      this.customerClient.send({ cmd: 'find_one_customer' }, +id).pipe(
+        catchError((err) => {
+          const status = err.status || HttpStatus.INTERNAL_SERVER_ERROR;
+          const message = err.message || 'Error occurred in customer service';
+          
+          return throwError(() => new HttpException(message, status));
+        })
+      )
     );
-    
-    // If not found, throw 404
-    if (!data) throw new NotFoundException('Customer ${id} not found');
-
-    return data;
   }
 }

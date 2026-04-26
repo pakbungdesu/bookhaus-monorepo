@@ -1,16 +1,26 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { GatewayModule } from './gateway.module';
+import { ViewExceptionFilter } from '../../../filters/view-exception.filter';
 import { join } from 'path';
 import { RedisStore } from "connect-redis";
 import { createClient } from "redis";
 
-// Use require for these two to avoid the "is not a function" error
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(GatewayModule);
+
+  // Register the filter globally
+  app.useGlobalFilters(new ViewExceptionFilter());
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,        // Strips away properties not in the DTO
+    forbidNonWhitelisted: true, // Throws error if extra properties are sent
+    transform: true,        // Automatically transforms types
+  }));
 
   // Redis Client Setup
   const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
