@@ -146,9 +146,9 @@ export class InventoryController {
             : null
         })
       );
-      return res.redirect('/book/addBook?status=success');
+      return res.redirect('/book/add?status=success');
     } catch (err) {
-      return res.render('employee/addBook', { 
+      return res.render('employee/add', { 
         status: 'error',
         error: 'Failed to create book.',
         genres: this.genres,
