@@ -23,14 +23,14 @@ export class InventoryController {
 
   // --- EMPLOYEE/MANAGER VIEWS ---
 
-  @Get('addBook')
+  @Get('add')
   @Roles('Employee', 'Manager')
   @Render('employee/addBook')
   async showAddNewBookPage(@Req() req) {
     return { genres: this.genres, user: req.user };
   }
 
-  @Get('editBook')
+  @Get('edit')
   async editBook(@Query() query: any, @Req() req, @Res() res) {
     const result = await firstValueFrom(
       this.client.send({ cmd: 'find_all_books' }, {

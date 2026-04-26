@@ -83,7 +83,7 @@
                 <button type="button" onclick="handleDelete()" class="bg-red-50 text-red-600 px-8 py-4 rounded-2xl font-bold text-base hover:bg-red-100 transition flex items-center gap-2 border border-red-100">
                     <i class="pi pi-trash"></i> Delete Book
                 </button>
-                <a href="/book/editBook" class="bg-gray-100 text-gray-500 px-10 py-4 rounded-2xl font-bold text-base hover:bg-gray-200 transition">Cancel</a>
+                <a href="/book/edit" class="bg-gray-100 text-gray-500 px-10 py-4 rounded-2xl font-bold text-base hover:bg-gray-200 transition">Cancel</a>
             </div>
         </form>
     </div>
@@ -115,7 +115,7 @@ async function handleDelete() {
                     icon: 'success',
                     confirmButtonColor: '#2563eb'
                 });
-                window.location.href = '/book/editBook';
+                window.location.href = '/book/edit';
             } else {
                 throw new Error();
             }
@@ -153,7 +153,7 @@ async function handleUpdate() {
                 text: 'Book information saved successfully.',
                 icon: 'success',
                 confirmButtonColor: '#2563eb'
-            }).then(() => window.location.href = '/book/editBook');
+            }).then(() => window.location.href = '/book/edit');
         } else {
             throw new Error();
         }
