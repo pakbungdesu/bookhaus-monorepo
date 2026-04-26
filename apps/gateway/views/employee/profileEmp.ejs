@@ -2,88 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Employee Profile | BookHaus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Bookhaus</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
 </head>
-<body class="bg-gray-50 font-sans antialiased">
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
     <%- include('../partials/navbar') %>
 
-    <div class="max-w-3xl mx-auto py-16 px-6">
-        <div class="bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden">
-            <div class="bg-gray-900 p-5 text-white">
-                <h1 class="text-2xl font-bold flex items-center gap-2">
-                    Employee Profile <i class="pi pi-info-circle"></i>
-                </h1>
-            </div>
-            
-            <div class="p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Full Name</label>
-                        <p class="text-lg text-gray-700">
-                            <%= employee.person?.firstname %> <%= employee.person?.lastname %>
-                        </p>
-                    </div>
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Position</label>
-                        <p class="text-lg text-gray-700"><%= employee.position %></p>
-                    </div>
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Gender</label>
-                        <p class="text-lg text-gray-700"><%= employee.person?.gender %></p>
+    <div class="max-w-4xl mx-auto px-4 py-12 no-print">
+        <% if (typeof employee !== 'undefined') { %>
+            <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                My Profile <span class="text-xl grayscale opacity-70">👤</span>
+            </h1>
+            <div id="details" class="tab-content block">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Full Name</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.firstname %> <%= employee.person?.lastname %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Email Address</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.email %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Birthday</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.birthdate ? new Date(employee.person.birthdate).toISOString().split('T')[0] : '' %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Gender</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.gender %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Shipping Address</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.address %></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Phone</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= employee.person?.phone %></p>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Email Address</label>
-                        <p class="text-lg text-gray-700"><%= employee.person?.email %></p>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Phone</label>
-                        <p class="text-lg text-gray-700"><%= employee.person?.phone %></p>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Address</label>
-                        <p class="text-lg text-gray-700"><%= employee.person?.address %></p>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Salary</label>
-                        <p class="text-lg text-green-600 font-bold">
-                            $<%= Number(employee.salary).toLocaleString() %>
-                        </p>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Birthday</label>
-                        <p class="text-lg text-gray-700">
-                            <%= new Date(employee.person.birthdate).toLocaleDateString('en-GB') %>
-                        </p>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-widest text-gray-400">Hire Date</label>
-                        <p class="text-lg text-gray-700">
-                            <%= new Date(employee.hiredate).toLocaleDateString('en-GB') %>
-                        </p>
+                    <div class="mt-10 pt-8 border-t border-gray-50 flex flex-wrap gap-4">
+                        <a href="/employee/update" class="inline-flex items-center gap-2 px-6 py-2.5 border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
+                            <i class="pi pi-user-edit"></i> Edit Profile
+                        </a>
+                        <form action="/auth/logout" method="POST">
+                            <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
+                                <i class="pi pi-sign-out"></i> Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
-
-                <div class="mt-12 flex justify-center gap-4">
-                    <a href="/employee/update" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">
-                        <i class="pi pi-user-edit mr-2"></i> Edit Profile
-                    </a>
-                    <form action="/auth/logout" method="POST">
-                        <button class="px-8 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-600 hover:text-white transition">
-                            Logout
-                        </button>
-                    </form>
-                </div>
             </div>
-        </div>
+        <% } else { %>
+            <div class="text-center py-20 bg-white rounded-2xl border">
+                <i class="pi pi-lock text-4xl text-gray-300 mb-4"></i>
+                <h2 class="text-xl font-bold">Access Denied</h2>
+                <a href="/auth/login/emp" class="text-blue-600 hover:underline mt-4 inline-block">Login to your account</a>
+            </div>
+        <% } %>
     </div>
 </body>
 </html>
