@@ -133,8 +133,6 @@ export class InventoryController {
   @UseInterceptors(FileInterceptor('photo'))
   async create(@Body() dto: any, @UploadedFile() file: Express.Multer.File, @Res() res,@Req() req) {
     try {
-      console.log(file);
-      
       await firstValueFrom(
         this.client.send({ cmd: 'create_book' }, { 
           dto, 
