@@ -19,7 +19,7 @@ export class EmployeeController {
     return { employee, user: req.user };
   }
 
-  @Get('updateProfile')
+  @Get('update')
   @Roles('Employee', 'Manager')
   @Render('employee/updateProfile')
   async updateProfile(@Req() req) {
@@ -43,7 +43,7 @@ export class EmployeeController {
     };
   }
 
-@Post('editProfile')
+@Post('edit')
 @Roles('Employee')
 async editProfile(@Body() updateDto: any, @Req() req, @Res() res) {
     await firstValueFrom(
@@ -52,7 +52,7 @@ async editProfile(@Body() updateDto: any, @Req() req, @Res() res) {
     return res.redirect('/employee/profile');
 }
 
-  @Get('editStaff/:id')
+  @Get('edit/:id')
   @Render('employee/editStaff')
   async showEditStaff(@Param('id') id: string, @Req() req) {
     const employee = await firstValueFrom(
