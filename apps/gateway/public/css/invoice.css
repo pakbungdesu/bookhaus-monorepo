@@ -16,5 +16,9 @@
         box-shadow: none !important;
     }
 
+    body > *:not(#global-invoice-print) {
+        display: none !important;
+    }
+
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
