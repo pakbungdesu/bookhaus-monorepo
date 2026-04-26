@@ -56,6 +56,19 @@
                 </div>
             </div>
 
+            <div class="flex flex-col md:flex-row items-center gap-10 mb-16 text-left">
+                <div class="flex-1 flex justify-center">
+                    <img src="/images/whywe4.jpg" alt="stillness" class="max-w-[80%]">
+                </div>
+                <div class="flex-1 px-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <i class="pi pi-moon text-4xl text-gray-900"></i>
+                        <h3 class="text-3xl font-bold text-gray-900">The Stillness</h3>
+                    </div>
+                    <p class="text-gray-500 text-lg leading-relaxed max-w-[400px]">In a fast-paced world, a book is an invitation to breathe, reflect, and just be.</p>
+                </div>
+            </div>
+
             <% if (typeof user !== 'undefined' && user && user.DTYPE === 'Employee') { %>
                 <div class="my-20 pt-10 border-t border-gray-100">
                     <%- include('./partials/contentEmp') %>
