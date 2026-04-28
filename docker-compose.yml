@@ -27,6 +27,29 @@ services:
       timeout: 5s
       retries: 5
 
+  recommendation-service:
+    build:
+      context: .
+      dockerfile: ./apps/recommendation-service/Dockerfile
+    container_name: bookhaus-recommendation
+    ports:
+      - "8008:8000"
+    environment:
+      - DB_HOST=mysql-db
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - bookhaus-network
+
+  recommender-model: # Use this name to avoid conflicts
+    build: ./apps/recommender-model # Path to your Python folder
+    container_name: bookhaus-recommender-engine
+    ports:
+      - "8009:8000" # Maps host 8009 to container 8000
+    networks:
+      - bookhaus-network
+
   # --- GATEWAY ---
   gateway:
     build:

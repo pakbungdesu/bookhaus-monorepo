@@ -6,6 +6,7 @@ import { ViewExceptionFilter } from '../../../filters/view-exception.filter';
 import { join } from 'path';
 import { RedisStore } from "connect-redis";
 import { createClient } from "redis";
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -31,6 +32,17 @@ async function bootstrap() {
     client: redisClient,
     prefix: "bookhaus_sess:",
   });
+
+  app.use(
+    '/recommend',
+    createProxyMiddleware({
+      target: 'http://recommender-service:8000', // Points to your NestJS bridge
+      changeOrigin: true,
+      pathRewrite: {
+        '^/recommend': '/recommend', // Ensure this maps correctly
+      },
+    }),
+  );
 
   // Middleware
   app.use(cookieParser());
