@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Render, Inject, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Render, Inject, Param, UseGuards, Delete } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard, Roles, RolesGuard } from '@app/shared';
@@ -60,7 +60,22 @@ export class FavoriteController {
     return { success: true, message: 'Added to wishlist!', data: result };
   }
 
-  @Post()
+  // @Post()
+  // @Roles('Customer')
+  // async remove(@Body('productId') productId: string, @Req() req) {
+  //   const payload = { 
+  //     userId: Number(req.user.sub), 
+  //     productId: Number(productId) 
+  //   };
+
+  //   await firstValueFrom(
+  //     this.favoriteClient.send({ cmd: 'remove_favorite' }, payload)
+  //   );
+    
+  //   return { success: true, message: 'Removed from wishlist' };
+  // }
+
+  @Delete()
   @Roles('Customer')
   async remove(@Body('productId') productId: string, @Req() req) {
     const payload = { 

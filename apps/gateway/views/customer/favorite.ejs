@@ -12,7 +12,7 @@
         async function removeFromWishlist(productId) {
             try {
                 const response = await fetch('/favorite', {
-                    method: 'POST',
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -128,16 +128,12 @@
                                                     onclick="addToCart('<%= fav.book.productId %>')">
                                                 <i class="pi pi-shopping-cart"></i>
                                             </button>
-                                        </form>
-                                        
-                                        <form action="/favorite" method="POST">
-                                            <input type="hidden" name="productId" value="<%= fav.book.productId %>">
-                                            <button type="button" 
-                                                    onclick="removeFromWishlist('<%= fav.book.productId %>')"
-                                                    class="p-2 text-red-500 hover:bg-red-50 rounded-full transition">
-                                                <i class="pi pi-trash"></i>
-                                            </button>
-                                        </form>
+                                        </form>                                   
+                                        <button type="button" 
+                                                onclick="removeFromWishlist('<%= fav.book.productId %>')"
+                                                class="p-2 text-red-500 hover:bg-red-50 rounded-full transition">
+                                            <i class="pi pi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
