@@ -43,16 +43,16 @@ export class EmployeeController {
     };
   }
 
-@Post('edit')
-@Roles('Employee')
-async editProfile(@Body() updateDto: any, @Req() req, @Res() res) {
-    await firstValueFrom(
-        this.client.send({ cmd: 'update_employee_profile' }, { id: req.user.sub, updateDto })
-    );
-    return res.redirect('/employee/profile');
-}
+  @Post()
+  @Roles('Employee')
+  async editProfile(@Body() updateDto: any, @Req() req, @Res() res) {
+      await firstValueFrom(
+          this.client.send({ cmd: 'update_employee_profile' }, { id: req.user.sub, updateDto })
+      );
+      return res.redirect('/employee/profile');
+  }
 
-  @Get('edit/:id')
+  @Get(':id')
   @Render('employee/editStaff')
   async showEditStaff(@Param('id') id: string, @Req() req) {
     const employee = await firstValueFrom(
@@ -61,7 +61,7 @@ async editProfile(@Body() updateDto: any, @Req() req, @Res() res) {
     return { employee, user: req.user };
   }
 
-  @Post('update/:id')
+  @Post(':id')
   @Roles('Manager')
   async updateStaff(@Param('id') id: string, @Body() updateDto: any, @Res() res) {
     try {
