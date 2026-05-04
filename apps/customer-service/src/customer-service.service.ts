@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -14,7 +14,7 @@ export class CustomerService {
   ) {}
 
   // 1. Find All
-  async findAllCustomers(): Promise<Customer[]> {
+  async findAllCustomers(): Promise<Customer[] | null> {
     return await this.customerRepository.find({
       relations: ['person'], // Removed 'orders'
     });
@@ -66,9 +66,8 @@ export class CustomerService {
    } catch (err) {
       await queryRunner.rollbackTransaction();
       
-      // Tell TypeScript: "Treat 'err' as having a 'code' property for this line"
       if ((err as any).code === 'ER_DUP_ENTRY') {
-        return { error: 'EMAIL_EXISTS' };
+        throw new ConflictException('Email or unique field is already in use');
       }
       
       throw err;
@@ -91,8 +90,18 @@ export class CustomerService {
       },
     });
 
-    if (!customer) return null;
-    return await this.customerRepository.save(customer);
+    if (!customer){
+      throw new NotFoundException('Customer with ID ${id} not found');
+    }
+
+    try {
+      return await this.customerRepository.save(customer);
+    } catch (error) {
+      if ((error as any).code === 'ER_DUP_ENTRY') {
+        throw new ConflictException('Email or unique field is already in use');
+      }
+      throw error;
+    }
   }
 
   // 6. Remove
@@ -100,13 +109,17 @@ export class CustomerService {
     const customer = await this.findOne(id);
     if (!customer) return null;
 
-    await this.dataSource.transaction(async (manager) => {
-      await manager.remove(customer);
-      if (customer.person) {
-        await manager.remove(customer.person);
-      }
-    });
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.remove(customer);
+        if (customer.person) {
+          await manager.remove(customer.person);
+        }
+      });
 
-    return { success: true };
+      return { success: true, message: 'Customer with ID ${id} successfully deleted' };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete customer due to a database error');
+    }
   }
 }

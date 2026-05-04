@@ -47,7 +47,7 @@ export class CreatePersonDto {
 
   @IsOptional()
   @IsString({ message: 'Phone number must be a string' })
-  @Matches(/^\+?[0-9]{7,15}$/, {
+  @Matches(/^[0-9]{7,15}$/, {
     message: 'Phone number must contain only digits and can optionally start with a +.',
   })
   phone?: string;
