@@ -81,7 +81,7 @@ export class CustomerController {
     };
   }
 
-  @Post('update')
+  @Post()
   @Roles('Customer')
   @HttpCode(HttpStatus.OK) // Explicitly setting 200
   async updateProfile(@Body() updateData: any, @Req() req, @Res() res) {
