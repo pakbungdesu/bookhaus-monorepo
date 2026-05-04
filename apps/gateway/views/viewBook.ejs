@@ -14,7 +14,7 @@
             const btn = document.getElementById(`fav-btn-${productId}`);
             
             try {
-                const response = await fetch(`/favorite/add/${productId}`, {
+                const response = await fetch(`/favorite/${productId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
@@ -109,7 +109,7 @@
                 
                 <% if (user && user.DTYPE === 'Customer') { %>
                     <div class="mt-10 flex flex-wrap gap-4">
-                        <form action="/favorite/add/<%= book.productId %>" method="POST">
+                        <form action="/favorite/<%= book.productId %>" method="POST">
                             <button type="button" 
                                     id="fav-btn-<%= book.productId %>"
                                     onclick="addToFavorites('<%= book.productId %>')"

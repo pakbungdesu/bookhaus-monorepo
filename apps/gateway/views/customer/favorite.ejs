@@ -11,7 +11,7 @@
     <script>
         async function removeFromWishlist(productId) {
             try {
-                const response = await fetch('/favorite/remove', {
+                const response = await fetch('/favorite', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@
                                             </button>
                                         </form>
                                         
-                                        <form action="/favorite/remove" method="POST">
+                                        <form action="/favorite" method="POST">
                                             <input type="hidden" name="productId" value="<%= fav.book.productId %>">
                                             <button type="button" 
                                                     onclick="removeFromWishlist('<%= fav.book.productId %>')"

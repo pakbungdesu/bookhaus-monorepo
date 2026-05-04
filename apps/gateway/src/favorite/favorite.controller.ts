@@ -11,7 +11,7 @@ export class FavoriteController {
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy, // Inject Inventory
   ) {}
 
-  @Get('wishlist')
+  @Get()
   @Render('customer/favorite')
   @Roles('Customer')
   async findAll(@Req() req) {
@@ -45,7 +45,7 @@ export class FavoriteController {
     };
   }
 
-  @Post('add/:productId')
+  @Post(':productId')
   @Roles('Customer')
   async add(@Param('productId') productId: string, @Req() req) {
     const payload = { 
@@ -60,7 +60,7 @@ export class FavoriteController {
     return { success: true, message: 'Added to wishlist!', data: result };
   }
 
-  @Post('remove')
+  @Post()
   @Roles('Customer')
   async remove(@Body('productId') productId: string, @Req() req) {
     const payload = { 
