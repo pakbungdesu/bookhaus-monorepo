@@ -1,4 +1,4 @@
-import { Injectable, Query } from '@nestjs/common';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { Book } from '@app/shared';
@@ -44,7 +44,12 @@ export class InventoryService {
   }
 
   async update(id: number, dto: any) {
-    const book = await this.repo.preload({ productId: id, ...dto });
+    const book = await this.repo.preload({ 
+      productId: id, // Ensure this matches your Book entity @PrimaryColumn
+      ...dto 
+    });
+
+    if (!book) throw new NotFoundException(`Book #${id} not found`);
     return this.repo.save(book);
   }
 

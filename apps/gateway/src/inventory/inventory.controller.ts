@@ -165,8 +165,10 @@ export class InventoryController {
 
   @Patch(':id')
   @Roles('Manager')
-  async update(@Param('id') id: string) {
-    return await firstValueFrom(this.client.send({ cmd: 'update_book' }, +id));
+  async update(@Param('id') id: string, @Body() updateBookDto: any) {
+    return await firstValueFrom(
+      this.client.send({ cmd: 'update_book' }, { id: +id, dto: updateBookDto })
+    );
   }
 
 }
