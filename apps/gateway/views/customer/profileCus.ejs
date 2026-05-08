@@ -122,8 +122,10 @@
                                                 <% } %>
                                                 
                                                 <% if (['Paid', 'Shipped', 'Completed'].includes(order.status)) { %>
-                                                    <button onclick="prepareAndPrintInvoice('<%= JSON.stringify(order).replace(/'/g, "\\'") %>')" 
-                                                            class="text-gray-400 hover:text-blue-600 transition">
+                                                    <button 
+                                                        class="print-trigger text-gray-400 hover:text-blue-600 transition"
+                                                        data-order='<%- JSON.stringify(order).replace(/'/g, "&apos;") %>'
+                                                        data-customer='<%- JSON.stringify(customer).replace(/'/g, "&apos;") %>'>
                                                         <i class="pi pi-print"></i>
                                                     </button>
                                                 <% } %>
@@ -148,7 +150,7 @@
         <% } %>
     </div>
 
-    <%- include('../partials/invoice') %>
+    <%- include('../partials/invoice2') %>
 
     <%- include('../partials/footer') %>
 

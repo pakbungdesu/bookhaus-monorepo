@@ -46,34 +46,66 @@
 </div>
 
 <script>
-    function prepareAndPrintInvoice2(orderInput, custInput) {
-        const order = typeof orderInput === 'string' ? JSON.parse(orderInput) : orderInput;
-        const customer = typeof custInput === 'string' ? JSON.parse(custInput) : custInput;
+    document.addEventListener('click', function (event) {
+    // Check if the clicked element (or its parent) is the print trigger
+    const btn = event.target.closest('.print-trigger');
+    if (!btn) return;
 
-        // Header & Customer Info
-        document.getElementById('inv-order-id').innerText = `#${order.orderId}`;
-        document.getElementById('inv-status').innerText = order.status;
-        document.getElementById('inv-date').innerText = new Date(order.orderDate).toLocaleDateString();
-        document.getElementById('inv-cust-name').innerText = `${customer.person.firstname} ${customer.person.lastname}`;
-        document.getElementById('inv-cust-email').innerText = customer.person.email;
-        document.getElementById('inv-cust-phone').innerText = customer.person.phone;
-        document.getElementById('inv-cust-address').innerText = customer.person.address;
+    try {
+        // Retrieve the strings from data attributes
+        const orderData = btn.getAttribute('data-order');
+        const customerData = btn.getAttribute('data-customer');
 
-        // Fill Items
-        const tbody = document.getElementById('inv-items-body');
-        tbody.innerHTML = '';
+        // Parse them
+        const order = JSON.parse(orderData);
+        const customer = JSON.parse(customerData);
+
+        // Run your existing print logic
+        renderAndPrint(order, customer);
+    } catch (error) {
+        console.error("Invoice Printing Error:", error);
+        alert("Error parsing order data for print.");
+    }
+});
+
+function renderAndPrint(order, customer) {
+    // 1. Fill Header & Customer Info
+    document.getElementById('inv-order-id').innerText = `#${order?.orderId || 'N/A'}`;
+    document.getElementById('inv-status').innerText = order?.status || 'Unknown';
+    document.getElementById('inv-date').innerText = order?.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
+    
+    const person = customer?.person || {};
+    document.getElementById('inv-cust-name').innerText = `${person.firstname || ''} ${person.lastname || ''}`.trim() || 'Valued Customer';
+    document.getElementById('inv-cust-email').innerText = person.email || '';
+    document.getElementById('inv-cust-phone').innerText = person.phone || 'No phone provided';
+    document.getElementById('inv-cust-address').innerText = person.address || 'No address provided';
+
+    // 2. Fill Items table
+    const tbody = document.getElementById('inv-items-body');
+    tbody.innerHTML = '';
+    
+    if (order?.orderDetails && Array.isArray(order.orderDetails)) {
         order.orderDetails.forEach(item => {
+            const title = item.book?.title || 'Unknown Item';
+            const qty = item.quantity || 0;
+            const price = Number(item.unitPrice || 0);
+            
             tbody.innerHTML += `
                 <tr>
-                    <td class="px-4 py-4 font-semibold">${item.book?.title || 'Unknown Book'}</td>
-                    <td class="px-4 py-4 text-center">${item.quantity}</td>
-                    <td class="px-4 py-4 text-right">$${Number(item.unitPrice || 0).toFixed(2)}</td>
-                    <td class="px-4 py-4 text-right font-bold">$${(item.quantity * (item.unitPrice || 0)).toFixed(2)}</td>
+                    <td class="px-4 py-4 font-semibold">${title}</td>
+                    <td class="px-4 py-4 text-center">${qty}</td>
+                    <td class="px-4 py-4 text-right">$${price.toFixed(2)}</td>
+                    <td class="px-4 py-4 text-right font-bold">$${(qty * price).toFixed(2)}</td>
                 </tr>
             `;
         });
-
-        document.getElementById('inv-grand-total').innerText = `$${(Number(order.orderTotal) || 0).toFixed(2)}`;
-        window.print();
     }
+
+    document.getElementById('inv-grand-total').innerText = `$${(Number(order?.orderTotal) || 0).toFixed(2)}`;
+    
+    // 3. Trigger Print
+    setTimeout(() => {
+        window.print();
+    }, 150);
+}
 </script>
