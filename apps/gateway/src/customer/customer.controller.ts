@@ -83,12 +83,14 @@ export class CustomerController {
 
   @Post()
   @Roles('Customer')
-  @HttpCode(HttpStatus.OK) // Explicitly setting 200
+  @HttpCode(HttpStatus.OK)
   async updateProfile(@Body() updateData: any, @Req() req, @Res() res) {
     const userId = Number(req.user.sub);
+    
     await firstValueFrom(
       this.customerClient.send({ cmd: 'update_customer' }, { id: userId, dto: updateData })
     );
+
     return res.redirect('/customer/profile');
   }
 
