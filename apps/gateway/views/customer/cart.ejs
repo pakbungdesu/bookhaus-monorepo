@@ -155,7 +155,7 @@
                         'Accept': 'application/json'
                     },
                     // Ensure we send exactly what the Gateway expects
-                    body: JSON.stringify({ productId: String(productId) })
+                    body: JSON.stringify({ id: String(productId) })
                 });
 
                 // This will now print!

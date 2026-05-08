@@ -132,7 +132,6 @@ export class OrderController {
 
   @Post('cart/remove')
   @Roles('Customer')
-  // REMOVE "@Res() res: Response" from the parameters here
   async removeFromCart(@Body('id') productId: string, @Req() req) { 
     const payload = { 
       userId: Number(req.user.sub), 
@@ -142,7 +141,7 @@ export class OrderController {
     
     try {
       await firstValueFrom(this.client.send({ cmd: 'remove_item' }, payload));
-      return { success: true }; // NestJS will now automatically send this as JSON
+      return { success: true };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
     }
